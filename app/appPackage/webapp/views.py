@@ -60,7 +60,7 @@ class DetailView(generic.DetailView):
         # get primary key of the detailview
         pk = self.kwargs['pk']
 
-        initiateUmlFile("test2.xmi")
+        initiateUmlFile("webapp/static/webapp/test2.xmi")
         
         context = super(DetailView, self).get_context_data(*args, **kwargs)
         
