@@ -1,0 +1,71 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'webapp/style.css' %}">
+
+<body style="background-color:#009688;"></body>
+<p style="background-color:#ffffff;"></p>
+<!-- <div class="w3-teal"> -->
+<img src="{% static 'webapp/images/graph.png' %}">
+<br>
+
+<big> Components: </big>
+<ul>
+{% for c in component_list.all %}
+    <li>Name: {{ c.name }} <br> 
+        ID: {{ c.id }} <br>
+        Type: {{ c.type }}
+    </li>
+{% endfor %}
+</ul>
+
+<big> Attributes: </big>
+<ul>
+{% for a in attribute_list.all %}
+    <li>Name: {{ a.name }} </li> 
+        ID: {{ a.id }} <br>
+        Type: {{ a.type }} <br> 
+        DataType: {{ a.datatype }} <br> 
+        Owner ID: {{ a.ownerid}} <br>
+    </li>
+{% endfor %}
+</ul>
+
+<big> Operations: </big>
+<ul>
+{% for o in operation_list.all %}
+    <li>Name: {{ o.name }} <br>
+        ID: {{ o.id }} <br>
+        Type: {{ o.type }} <br> 
+        Visibility: {{ o.visibility}} <br> 
+        Owner ID: {{ o.ownerid }}
+    </li>
+{% endfor %}
+</ul>
+
+<big> Parameters: </big>
+<ul>
+{% for p in parameter_list.all %}
+    <li>Name: {{ p.name }} <br>
+        ID: {{ p.id }} <br>
+        Direction: {{ p.direction }} <br> 
+        Type: {{ p.type }} <br>
+        Owner ID: {{ p.ownerid }}
+    </li>
+{% endfor %}
+</ul>
+
+<big> Relations: </big>
+<ul>
+{% for r in relation_list.all %}
+    <li>Name: {{ r.name }} <br>
+        ID: {{ r.id }} <br>
+        Type: {{ r.type }} <br> 
+        Source: {{ r.source }} <br> 
+        Target: {{ r.target }}
+    </li>
+{% endfor %}
+</ul>
+
+<!-- </div> -->
+
+

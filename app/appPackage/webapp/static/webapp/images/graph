@@ -1,0 +1,9 @@
+// Model Representation
+digraph {
+	graph [rankdir=LR]
+	"AAAAAAF5Dt5llozdz7c=" [label="Person
+uml:Class" color=lightgrey shape=box style=filled]
+	"AAAAAAF5DtqrQoyT6eU=" [label="Citizen
+uml:Class" color=lightgrey shape=box style=filled]
+	"AAAAAAF5DtqrQoyT6eU=" -> "AAAAAAF5Dt5llozdz7c=" [label="uml:Generalization"]
+}
