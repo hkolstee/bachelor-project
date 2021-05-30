@@ -1,0 +1,17 @@
+@startuml components
+abstract        abstract
+abstract class  "abstract class"
+annotation      annotation
+class           class {
+    -String attribute1
+    #String attribute2
+    number : Integer
+    object[] array
+    ~void method1(String)
+    +int method2()
+}
+entity          entity
+enum            enum
+interface       interface
+@enduml
+@enduml

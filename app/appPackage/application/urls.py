@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 # path: 4 args, first 2 required
@@ -23,6 +25,10 @@ from django.urls import include, path
 # 3rd: kwargs = ?
 # 4th: name = naming your urls lets you refer to it unambigiously from elsewehere in django (templates)
 urlpatterns = [
-    path('webapp/', include('webapp.urls')),
+    path('webapp/', include('webapp.urls', namespace='webapp')),
     path('admin/', admin.site.urls),
 ]
+
+# To see files when debugging
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
