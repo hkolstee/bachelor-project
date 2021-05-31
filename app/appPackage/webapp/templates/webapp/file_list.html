@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %} Files Page {% endblock %}
+
+{% block content %}
+
+<h1>All Files:</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Download</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for file in file_list %}
+        <tr>
+            <td>{{ file.name }}</td>
+            <td>
+                <a href="{{ file.file.url }}"> {{file.file}} </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %} 

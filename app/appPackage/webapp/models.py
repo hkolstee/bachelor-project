@@ -1,3 +1,4 @@
+from os import name
 from django.db import models
 from django.db.models.deletion import CASCADE
 import xml.etree.ElementTree as ET
@@ -25,22 +26,30 @@ namespaces = {
 
 
 # Create your models here.
+class modelfile(models.Model):
+    name = models.CharField(max_length = 100)
+    file = models.FileField(upload_to='')
+
+    def __str__(self):
+        return self.name
+
 class modelrepresentation(models.Model):
     # Used as PK in database
     # id = models.AutoField(primary_key=True)
     # Used to find associated components
     modelid = models.CharField(max_length = 45)
     name = models.CharField(max_length = 45)
+    file = models.OneToOneField(modelfile, on_delete=models.CASCADE)
 
 class component(models.Model):
-    id = models.CharField(primary_key = True, max_length=20)
+    componentid = models.CharField(max_length=20)
     # id = models.CharField(max_length = 45)
     name = models.CharField(max_length = 45)
     type = models.CharField(max_length = 45)
     modelid = models.ForeignKey(modelrepresentation, on_delete=models.CASCADE)
 
 class attribute(models.Model):
-    id = models.CharField(primary_key = True, max_length=20)
+    attributeid = models.CharField(max_length=20)
     # id = models.CharField(max_length = 45)
     name = models.CharField(max_length = 45)
     type = models.CharField(max_length = 45)
@@ -49,7 +58,7 @@ class attribute(models.Model):
     ownerid = models.ForeignKey(component, on_delete=models.CASCADE)   
 
 class operation(models.Model):
-    id = models.CharField(primary_key = True, max_length=20)
+    operationid = models.CharField(max_length=20)
     # id = models.CharField(max_length = 45)
     name = models.CharField(max_length = 45)
     type = models.CharField(max_length = 45)
@@ -57,7 +66,7 @@ class operation(models.Model):
     ownerid = models.ForeignKey(component, on_delete=models.CASCADE)
 
 class parameter(models.Model):
-    id = models.CharField(primary_key = True, max_length=20)
+    parameterid = models.CharField(max_length=20)
     # id = models.CharField(max_length = 45)
     name = models.CharField(max_length = 45, null = True, blank = True)
     type = models.CharField(max_length = 45)
@@ -65,7 +74,7 @@ class parameter(models.Model):
     ownerid = models.ForeignKey(operation, on_delete=models.CASCADE)        
 
 class relation(models.Model):
-    id = models.CharField(primary_key = True, max_length=20)
+    relationid = models.CharField(max_length=20)
     # id = models.CharField(max_length = 45)
     name = models.CharField(max_length = 45, null = True, blank = True)
     type = models.CharField(max_length = 45)
@@ -212,8 +221,15 @@ def findModelStar(root):
         # find associated components
         findComponentsStar(root, modelId)
 
-# Methods to parse and save from PlantUML staruml-xmi export
+# function to find foreign key based on found id in model
+def find(list, filter):
+    for x in list:
+        if filter(x):
+            return x
+    print("no foreign key found\n")
+    return False
 
+# Methods to parse and save from PlantUML staruml-xmi export
 def findRelation(root, modelId):
     # Generalizations
     for ownedRelation in root.findall(".//UML:Generalization/[@namespace='" + modelId + "']", namespaces):
@@ -221,10 +237,10 @@ def findRelation(root, modelId):
         relationId = ownedRelation.get('xmi.id')
         relationName = ownedRelation.get('name')
         relationType = 'generalization'
-        relationSource = ownedRelation.get('child')
-        relationTarget = ownedRelation.get('parent')
+        relationSource = find(components, lambda x: x.componentid == ownedRelation.get('child'))
+        relationTarget = find(components, lambda x: x.componentid == ownedRelation.get('parent'))
         
-        r = relation(relationId, relationName, relationType, relationSource, relationTarget)
+        r = relation(relationid = relationId, name = relationName, type = relationType, source = relationSource, target = relationTarget)    
         relations.append(r)
 
     # Associations
@@ -240,12 +256,12 @@ def findRelation(root, modelId):
             if (count == 0):
                 if (relationName == ""):
                     relationName = relationEnd.get('aggregation')
-                relationTarget = relationEnd.get('type')
+                relationTarget = find(components, lambda x: x.componentid == relationEnd.get('type'))
             else:
-                relationSource = relationEnd.get('type')
+                relationSource = find(components, lambda x: x.componentid == relationEnd.get('type'))
             count = 1
 
-        r = relation(relationId, relationName, relationType, relationSource, relationTarget)
+        r = relation(relationid = relationId, name = relationName, type = relationType, source = relationSource, target = relationTarget)
         relations.append(r)
 
 
@@ -256,21 +272,21 @@ def findComponents(root, modelId, foreignKey):
         componentName = packagedElement.get('name')
         componentType = 'class'
         
-        c = component(componentId, componentName, componentType, foreignKey)
+        c = component(componentid = componentId, name =  componentName, type = componentType, modelid = foreignKey)
         components.append(c)
 
 
-def findModel(root):
+def findModel(root, modelfile):
     for model in root.findall(".//UML:Model", namespaces):
 
         modelId = model.get('xmi.id')
         modelName = model.get('name')
 
-        m = modelrepresentation.objects.create(modelid=modelId, name=modelName)
+        m = modelrepresentation.objects.create(modelid=modelId, name=modelName, file=modelfile)
         modelrepresentations.append(m)
 
         # find associated components
-        findComponents(root, modelId, m.id)
+        findComponents(root, modelId, m)
         # findComponents(root, modelId, m.id)
         findRelation(root, modelId)
 
@@ -310,12 +326,20 @@ def saveToDatabase():
     parameters.clear()
     relations.clear()
 
-def initiateUmlFile(filename):
+def initiateUmlFile(modelfile):
     # tree = ET.parse(filename)
     # root = tree.getroot()
-    root = etree.parse(filename)
+    modelrepresentations.clear()
+    components.clear()
+    attributes.clear()
+    operations.clear()
+    parameters.clear()
+    relations.clear()
 
-    findModel(root)
+
+    root = etree.parse("webapp/media/" + modelfile.file.name)
+
+    findModel(root, modelfile)
     # findModelStar(root)
     saveToDatabase()
 

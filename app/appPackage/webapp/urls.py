@@ -19,7 +19,10 @@ urlpatterns = [
     # path('<str:model_id>/', views.detail, name='detail')
     path('model/<str:pk>/', views.DetailView.as_view(), name='detail'),
     # /webapp/upload
-    path('upload/', views.upload, name='upload')
+    # path('upload/', views.upload, name='upload'),
+    path('upload/', views.UploadView.as_view(), name='upload'),
+    # path('files/', views.file_list, name='file_list'),
+    path('files/', views.FileListView.as_view(), name='file_list'),
 ]
 
 

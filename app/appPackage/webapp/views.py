@@ -1,20 +1,26 @@
 from django.db.models.query import QuerySet
 from django.http.response import HttpResponse
 from django.template import loader
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, Http404
 from django.views import generic
+from django.views.generic.list import ListView
 from .models import *
 from graphviz import Digraph, Graph
+from django.urls import reverse_lazy
 from django.core.files.storage import FileSystemStorage
 # from . import main
 
+from .forms import FileForm
 
 class IndexView(generic.ListView):
     # Make a list of models in the database sorted alphabetically
     context_object_name = 'model_list'
 
-    # initiateUmlFile("webapp/media/components.xmi")
+    # Load the models for each file -> fix in future that it only gets initiated once when uploaded
+    # for f in modelfile.objects.all():
+        # initiateUmlFile("webapp/media/" + f.file.name)
+        # initiateUmlFile(f)
 
     # Load template from template folder
     template_name = 'webapp/index.html'
@@ -31,8 +37,6 @@ class DetailView(generic.DetailView):
     def get_context_data(self, *args, **kwargs):
         # get primary key of the detailview
         pk = self.kwargs['pk']
-
-        # initiateUmlFile("webapp/static/webapp/components.xmi")
         
         context = super(DetailView, self).get_context_data(*args, **kwargs)
         
@@ -74,13 +78,13 @@ class DetailView(generic.DetailView):
         dot = Digraph(comment='Model Representation')
         for c in context['component_list']:
             # dot.node(c.id, c.name + "\n" + c.type, shape='box', style='filled', color='lightgrey')
-            dot.node(c.id, c.name, shape='box', style='filled', color='lightgrey')
+            dot.node(c.name, shape='box', style='filled', color='lightgrey')
 
         for r in context['relation_list']:
             if (r.name == None or r.name == ""):
-                dot.edge(r.source.id, r.target.id, label=r.type)
+                dot.edge(r.source.name, r.target.name, label=r.type)
             else:
-                dot.edge(r.source.id, r.target.id, label=r.name)
+                dot.edge(r.source.name, r.target.name, label=r.name)
 
         # print(dot.source)
         dot.graph_attr['rankdir'] = 'LR'
@@ -89,15 +93,14 @@ class DetailView(generic.DetailView):
         # return context to display in the template
         return context
 
-def upload(request):
-    context = {}
-    if (request.method == 'POST'):
-        # get uploaded file
-        uploaded_file = request.FILES['document']
-        
-        
-        # save the uploaded file
-        fs = FileSystemStorage()
-        name = fs.save(uploaded_file.name, uploaded_file)
-        context['url'] = fs.url(name)
-    return render(request, 'upload.html', context)
+class UploadView(generic.CreateView):
+    model = modelfile
+    # fields = ('name', 'file')
+    form_class = FileForm
+    success_url = reverse_lazy('webapp:file_list')
+    template_name = 'upload.html'
+
+class FileListView(generic.ListView):
+    model = modelfile
+    template_name = 'file_list.html'
+    context_object_name = 'file_list'
