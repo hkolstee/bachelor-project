@@ -6,9 +6,10 @@ from django.http import HttpResponse, Http404
 from django.views import generic
 from django.views.generic.list import ListView
 from .models import *
-from graphviz import Digraph, Graph
+from graphviz import Digraph, Graph, nohtml
 from django.urls import reverse_lazy
 from django.core.files.storage import FileSystemStorage
+import pydot
 # from . import main
 
 from .forms import FileForm
@@ -19,7 +20,7 @@ class IndexView(generic.ListView):
 
     # Load the models for each file -> fix in future that it only gets initiated once when uploaded
     # for f in modelfile.objects.all():
-        # initiateUmlFile("webapp/media/" + f.file.name)
+    #     # initiateUmlFile("webapp/media/" + f.file.name)
         # initiateUmlFile(f)
 
     # Load template from template folder
@@ -75,16 +76,49 @@ class DetailView(generic.DetailView):
         context['parameter_list'] = parameterList
 
         # Create the graph image
-        dot = Digraph(comment='Model Representation')
-        for c in context['component_list']:
-            # dot.node(c.id, c.name + "\n" + c.type, shape='box', style='filled', color='lightgrey')
-            dot.node(c.name, shape='box', style='filled', color='lightgrey')
+        # shape = record means we can add the attribute box / operations box beneath the name in the graph
+        dot = Digraph('dot', node_attr={'shape': 'record', 'height': '.01'})
+        dot.attr(style="filled", fillcolor=".7 .3 1.0", color=".5 .15 1.0")
 
+        # Add a node for each component
+        for c in context['component_list']:
+            # Find all attributes/operations that this object owns using a function defined in models.py
+            attributes = findAllRelated(context['attribute_list'], lambda x: x.ownerid == c)
+            operations = findAllRelated(context['operation_list'], lambda x: x.ownerid == c)
+            # Create an empty string
+            attributeString = ""
+            operationString = ""
+            # For each attribute/operation that this component owns, add information to the string (+ newline)
+            for a in attributes:
+                attributeString = attributeString + a.name + "\l"
+            for o in operations:
+                operationString = operationString + o.name + "\l"
+
+            # replace <,> by \<,\> to prevent bad label error in the nohtml() call
+            attributeString = attributeString.replace("<", "\<")
+            attributeString = attributeString.replace(">", "\>")
+            operationString = operationString.replace("<", "\<")
+            operationString = operationString.replace(">", "\>")
+
+            # Create the node with its attributes and operations in seperate sections
+            if attributeString == "" and operationString == "":
+                dot.node(c.name, nohtml(c.name), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
+            elif operationString == "":
+                dot.node(c.name, nohtml('{' + c.name + '}|' + attributeString), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
+            elif attributeString == "":
+                dot.node(c.name, nohtml('{' + c.name + '}|' + operationString), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
+            else:
+                dot.node(c.name, nohtml('{' + c.name + '}|' + attributeString + '|' + operationString), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
+                             
+
+        # Draw edges for each relation
+        # Depending on the type of the relation the name of the specific relation is saved in either the type or the name
+        # If the name is empty, it is saved in the type
         for r in context['relation_list']:
             if (r.name == None or r.name == ""):
-                dot.edge(r.source.name, r.target.name, label=r.type)
+                dot.edge(r.source.name, r.target.name, label=r.type, fontsize="9", fontcolor = "grey")
             else:
-                dot.edge(r.source.name, r.target.name, label=r.name)
+                dot.edge(r.source.name, r.target.name, label=r.name, fontsize="9", fontcolor = "grey")
 
         # print(dot.source)
         dot.graph_attr['rankdir'] = 'LR'
@@ -95,10 +129,17 @@ class DetailView(generic.DetailView):
 
 class UploadView(generic.CreateView):
     model = modelfile
-    # fields = ('name', 'file')
     form_class = FileForm
     success_url = reverse_lazy('webapp:file_list')
     template_name = 'upload.html'
+
+    # parse the file and save to database when upload is success
+    def form_valid(self, form):
+        file = form.save()
+        # parse file and save mapped representation to database
+        initiateUmlFile(file)
+
+        return super(UploadView,self).form_valid(form)
 
 class FileListView(generic.ListView):
     model = modelfile

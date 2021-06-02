@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?><XMI xmlns:UML="href://org.omg/UML/1.3" xmi.version="1.1">
+    <XMI.header>
+        <XMI.metamodel xmi.name="UML" xmi.version="1.3"/>
+    </XMI.header>
+    <XMI.content>
+        <UML:Model name="PlantUML" xmi.id="model1">
+            <UML:Namespace.ownedElement>
+                <UML:Class name="Game" namespace="gui" xmi.id="cl0003">
+                    <UML:Classifier.feature/>
+                </UML:Class>
+                <UML:Class name="Player_manager" namespace="gui" xmi.id="cl0004">
+                    <UML:Classifier.feature/>
+                </UML:Class>
+                <UML:Class name="Display_manager" namespace="gui" xmi.id="cl0006">
+                    <UML:Classifier.feature/>
+                </UML:Class>
+                <UML:Class name="Updatable" namespace="gui" xmi.id="cl0008">
+                    <UML:Classifier.feature>
+                        <UML:Operation name="void update()" xmi.id="att40"/>
+                    </UML:Classifier.feature>
+                </UML:Class>
+                <UML:Class name="Players_layout" namespace="gui" xmi.id="cl0009">
+                    <UML:Classifier.feature/>
+                </UML:Class>
+                <UML:Class name="Character" namespace="gui" xmi.id="cl0013">
+                    <UML:Classifier.feature/>
+                </UML:Class>
+                <UML:Class name="InputBox" namespace="gui" xmi.id="cl0015">
+                    <UML:Classifier.feature/>
+                </UML:Class>
+                <UML:Class isAbstract="true" name="Gui_control" namespace="gui" xmi.id="cl0017">
+                    <UML:Classifier.feature/>
+                </UML:Class>
+                <UML:Class name="Network" namespace="connection" xmi.id="cl0026">
+                    <UML:Classifier.feature/>
+                </UML:Class>
+                <UML:Class name="ConnectionManager" namespace="connection" xmi.id="cl0027">
+                    <UML:Classifier.feature/>
+                </UML:Class>
+                <UML:Class name="Game_state" namespace="model" xmi.id="cl0030">
+                    <UML:Classifier.feature/>
+                </UML:Class>
+                <UML:Class name="Player" namespace="model" xmi.id="cl0031">
+                    <UML:Classifier.feature/>
+                </UML:Class>
+                <UML:Class name="Collectable" namespace="model" xmi.id="cl0033">
+                    <UML:Classifier.feature/>
+                </UML:Class>
+                <UML:Class name="Katch" namespace="control" xmi.id="cl0036">
+                    <UML:Classifier.feature/>
+                </UML:Class>
+                <UML:Association namespace="model1" xmi.id="ass41">
+                    <UML:Association.connection>
+                        <UML:AssociationEnd association="ass41" type="cl0003" xmi.id="end42">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                        <UML:AssociationEnd association="ass41" name="1" type="cl0004" xmi.id="end43">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                    </UML:Association.connection>
+                </UML:Association>
+                <UML:Association namespace="model1" xmi.id="ass44">
+                    <UML:Association.connection>
+                        <UML:AssociationEnd association="ass44" type="cl0003" xmi.id="end45">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                        <UML:AssociationEnd association="ass44" name="1" type="cl0006" xmi.id="end46">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                    </UML:Association.connection>
+                </UML:Association>
+                <UML:Generalization child="cl0009" name="" namespace="model1" parent="cl0008" xmi.id="ass47"/>
+                <UML:Generalization child="cl0004" name="" namespace="model1" parent="cl0008" xmi.id="ass48"/>
+                <UML:Generalization child="cl0006" name="" namespace="model1" parent="cl0008" xmi.id="ass49"/>
+                <UML:Generalization child="cl0013" name="" namespace="model1" parent="cl0008" xmi.id="ass50"/>
+                <UML:Generalization child="cl0015" name="" namespace="model1" parent="cl0008" xmi.id="ass51"/>
+                <UML:Generalization child="cl0009" name="" namespace="model1" parent="cl0017" xmi.id="ass52"/>
+                <UML:Generalization child="cl0004" name="" namespace="model1" parent="cl0017" xmi.id="ass53"/>
+                <UML:Generalization child="cl0006" name="" namespace="model1" parent="cl0017" xmi.id="ass54"/>
+                <UML:Association namespace="model1" xmi.id="ass55">
+                    <UML:Association.connection>
+                        <UML:AssociationEnd association="ass55" type="cl0006" xmi.id="end56">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                        <UML:AssociationEnd association="ass55" name="1" type="cl0015" xmi.id="end57">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                    </UML:Association.connection>
+                </UML:Association>
+                <UML:Association namespace="model1" xmi.id="ass58">
+                    <UML:Association.connection>
+                        <UML:AssociationEnd association="ass58" type="cl0006" xmi.id="end59">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                        <UML:AssociationEnd association="ass58" name="1" type="cl0004" xmi.id="end60">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                    </UML:Association.connection>
+                </UML:Association>
+                <UML:Association namespace="model1" xmi.id="ass61">
+                    <UML:Association.connection>
+                        <UML:AssociationEnd association="ass61" type="cl0006" xmi.id="end62">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                        <UML:AssociationEnd association="ass61" name="1" type="cl0009" xmi.id="end63">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                    </UML:Association.connection>
+                </UML:Association>
+                <UML:Association namespace="model1" xmi.id="ass64">
+                    <UML:Association.connection>
+                        <UML:AssociationEnd association="ass64" type="cl0004" xmi.id="end65">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                        <UML:AssociationEnd association="ass64" name="1..*" type="cl0013" xmi.id="end66">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                    </UML:Association.connection>
+                </UML:Association>
+                <UML:Association namespace="model1" xmi.id="ass67">
+                    <UML:Association.connection>
+                        <UML:AssociationEnd association="ass67" type="cl0026" xmi.id="end68">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                        <UML:AssociationEnd association="ass67" name="1" type="cl0027" xmi.id="end69">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                    </UML:Association.connection>
+                </UML:Association>
+                <UML:Association namespace="model1" xmi.id="ass70">
+                    <UML:Association.connection>
+                        <UML:AssociationEnd association="ass70" type="cl0030" xmi.id="end71">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                        <UML:AssociationEnd association="ass70" name="1..*" type="cl0031" xmi.id="end72">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                    </UML:Association.connection>
+                </UML:Association>
+                <UML:Association namespace="model1" xmi.id="ass73">
+                    <UML:Association.connection>
+                        <UML:AssociationEnd association="ass73" type="cl0030" xmi.id="end74">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                        <UML:AssociationEnd association="ass73" name="*" type="cl0033" xmi.id="end75">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                    </UML:Association.connection>
+                </UML:Association>
+                <UML:Association namespace="model1" xmi.id="ass76">
+                    <UML:Association.connection>
+                        <UML:AssociationEnd association="ass76" type="cl0036" xmi.id="end77">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                        <UML:AssociationEnd association="ass76" name="1" type="cl0030" xmi.id="end78">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                    </UML:Association.connection>
+                </UML:Association>
+                <UML:Association namespace="model1" xmi.id="ass79">
+                    <UML:Association.connection>
+                        <UML:AssociationEnd association="ass79" name="1" type="cl0036" xmi.id="end80">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                        <UML:AssociationEnd association="ass79" name="1" type="cl0027" xmi.id="end81">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                    </UML:Association.connection>
+                </UML:Association>
+                <UML:Association namespace="model1" xmi.id="ass82">
+                    <UML:Association.connection>
+                        <UML:AssociationEnd association="ass82" type="cl0017" xmi.id="end83">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                        <UML:AssociationEnd association="ass82" name="1" type="cl0036" xmi.id="end84">
+                            <UML:AssociationEnd.participant/>
+                        </UML:AssociationEnd>
+                    </UML:Association.connection>
+                </UML:Association>
+            </UML:Namespace.ownedElement>
+        </UML:Model>
+    </XMI.content>
+</XMI>

@@ -1,0 +1,202 @@
+@startuml
+package net {
+    abstract AbstractConsumer<I> {
+        #ingressTaps() : Taps<I>
+        #ports() : Ports<I>
+    }
+
+    abstract AbstractProducer<E> {
+    }
+
+    abstract AbstractWorker<I,E> {
+        #ports() : Ports<I>
+        #ingressTaps() : Taps<I>
+        #egressTaps() : Taps<E>
+        #connections() : Connections<E>
+    }
+
+    interface Consumer<I> {
+    }
+
+    class DefaultTap<I> {
+    }
+
+    interface Egress<E> {
+        +egress(packet : Packet<E>) : Set<Node>
+        +egress(packets : Collection<Packet<E>>) : Set<Node>
+        +addEgressTap(tap : Tap<E>) : void
+        +removeEgressTap(tap : Tap<E>) : void
+    }
+
+    interface Ingress<I> {
+        +ingress() : Iterable<Packet<I>>
+        +ingress(max : int) : Iterable<Packet<I>>
+        +addIngressTap(tap : Tap<I>) : void
+        +removeIngressTap(tap : Tap<I>) : void
+    }
+
+    interface Inject<E> {
+        +inject(packet : Packet<E>) : void
+        +inject(packets : Collection<Packet<E>>) : void
+    }
+
+    class NetworkBuilder {
+        +addNode(node : Node) : NetworkBuilder
+        +connect(from : NodeId, to : NodeId, port : String) : NetworkBuilder
+        +get() : Network
+    }
+
+    interface Network {
+        +nodes() : Collection<? extends Node>
+        +nodes(type : Class<T>) : <T extends Node> Collection<? extends T>
+        +capability(capability : Class<T>) : <T> Collection<? extends T>
+        +node(nodeId : NodeId) : Node
+        +node(nodeId : NodeId, type : Class<T>) <T extends Node> T
+    }
+
+    class ProcessingException {
+    }
+
+    interface Process<I,E> {
+        +process(inbound : Packet<I>, outbound : Collection<Packet<E>>) : void
+        +process(packets : Iterable<Packet<I>>) : Collection<Packet<E>>
+    }
+
+    interface Producer<E> {
+    }
+
+    interface Shutdown {
+        +shutdown() : void
+    }
+
+    interface Tap<I> {
+    }
+
+    class TapRegistry<I> {
+    }
+
+    interface Taps<I> {
+    }
+
+    interface Worker<I,E> {
+    }
+}
+
+package control {
+    interface ControlContext
+}
+
+package data {
+    interface Packet
+}
+
+package endpoint {
+    interface Connections<E>
+    interface Ports<I>
+    interface Source<E>
+    interface Sink<I>
+}
+
+package lifecycle {
+    interface LifecycleContext
+}
+
+package node {
+    class AbstractNode
+    interface Node
+    interface NodeId
+}
+
+package schedule {
+    interface ScheduleContext
+}
+
+package java.lang {
+    interface Comparable
+    class Exception
+}
+
+package java.util {
+    class LinkedList<T>
+    interface Queue<T>
+    interface Set<T>
+}
+
+package java.util.concurrent {
+    class ConcurrentSkipListSet<T>
+}
+
+AbstractConsumer --|> AbstractNode
+AbstractConsumer ..|> Consumer
+AbstractConsumer ..|> LifecycleContext
+AbstractConsumer ..> Ports
+AbstractConsumer ..> Taps
+AbstractConsumer ..> TapRegistry
+
+AbstractProducer --|> AbstractNode
+AbstractProducer ..|> Producer
+AbstractProducer ..|> LifecycleContext
+AbstractProducer ..|> Shutdown
+AbstractProducer ..> Connections
+AbstractProducer ..> Taps
+AbstractProducer ..> TapRegistry
+
+AbstractWorker --|> AbstractNode
+AbstractWorker ..|> Worker
+AbstractWorker ..> Connections
+AbstractWorker ..> Ports
+AbstractWorker ..> Taps
+AbstractWorker ..> TapRegistry
+
+Consumer --|> Ingress
+Consumer --|> Process
+Consumer --|> Shutdown
+Consumer --|> Sink
+
+DefaultTap --|> LinkedList
+DefaultTap ..|> Tap
+DefaultTap ..|> Comparable
+
+Egress ..> Packet
+Egress ..> Node
+Egress ..> Tap
+
+Ingress ..> Packet
+Ingress ..> Tap
+
+Inject ..> Packet
+
+NetworkBuilder ..> Node
+NetworkBuilder ..> Network
+NetworkBuilder ..> NodeId
+
+Network ..> Node
+Network ..> NodeId
+
+ProcessingException --|> Exception
+
+Process ..> Packet
+Process ..> ProcessingException
+
+Producer --|> Source
+Producer --|> Inject
+Producer --|> Ingress
+Producer --|> Process
+Producer --|> Egress
+Producer --|> ScheduleContext
+Producer --|> ControlContext
+
+Tap --|> Queue
+
+TapRegistry --|> ConcurrentSkipListSet
+TapRegistry ..|> Taps
+
+Taps --|> Set
+
+Worker --|> Sink
+Worker --|> Ingress
+Worker --|> Process
+Worker --|> Egress
+Worker --|> Source
+
+@enduml

@@ -38,46 +38,46 @@ class modelrepresentation(models.Model):
     # id = models.AutoField(primary_key=True)
     # Used to find associated components
     modelid = models.CharField(max_length = 45)
-    name = models.CharField(max_length = 45)
+    name = models.CharField(max_length = 100)
     file = models.OneToOneField(modelfile, on_delete=models.CASCADE)
 
 class component(models.Model):
     componentid = models.CharField(max_length=20)
     # id = models.CharField(max_length = 45)
-    name = models.CharField(max_length = 45)
-    type = models.CharField(max_length = 45)
+    name = models.CharField(max_length = 100)
+    type = models.CharField(max_length = 100)
     modelid = models.ForeignKey(modelrepresentation, on_delete=models.CASCADE)
 
 class attribute(models.Model):
     attributeid = models.CharField(max_length=20)
     # id = models.CharField(max_length = 45)
-    name = models.CharField(max_length = 45)
-    type = models.CharField(max_length = 45)
+    name = models.CharField(max_length = 100)
+    type = models.CharField(max_length = 100)
     datatype = models.CharField(max_length = 45, null=True, blank=True)
-    visibilty = models.CharField(max_length = 45)
+    visibility = models.CharField(max_length = 100)
     ownerid = models.ForeignKey(component, on_delete=models.CASCADE)   
 
 class operation(models.Model):
     operationid = models.CharField(max_length=20)
     # id = models.CharField(max_length = 45)
-    name = models.CharField(max_length = 45)
-    type = models.CharField(max_length = 45)
-    visiblity = models.CharField(max_length = 45)
+    name = models.CharField(max_length = 100)
+    type = models.CharField(max_length = 100)
+    visibility = models.CharField(max_length = 45)
     ownerid = models.ForeignKey(component, on_delete=models.CASCADE)
 
 class parameter(models.Model):
     parameterid = models.CharField(max_length=20)
     # id = models.CharField(max_length = 45)
-    name = models.CharField(max_length = 45, null = True, blank = True)
-    type = models.CharField(max_length = 45)
-    direction = models.CharField(max_length = 45)
+    name = models.CharField(max_length = 100, null = True, blank = True)
+    type = models.CharField(max_length = 100)
+    direction = models.CharField(max_length = 100)
     ownerid = models.ForeignKey(operation, on_delete=models.CASCADE)        
 
 class relation(models.Model):
     relationid = models.CharField(max_length=20)
     # id = models.CharField(max_length = 45)
-    name = models.CharField(max_length = 45, null = True, blank = True)
-    type = models.CharField(max_length = 45)
+    name = models.CharField(max_length = 100, null = True, blank = True)
+    type = models.CharField(max_length = 100)
     source = models.ForeignKey(component, on_delete=models.CASCADE, related_name='source')
     target = models.ForeignKey(component, on_delete=models.CASCADE, related_name='target')
 
@@ -190,11 +190,11 @@ def findOperationsStar(root, componentId):
         findParametersStar(root, operationId)
 
 def findComponentsStar(root, modelId):
-    for packagedElement in root.findall(".//*[@{http://schema.omg.org/spec/XMI/2.1}type='uml:Class']"):
+    for ownedComponent in root.findall(".//*[@{http://schema.omg.org/spec/XMI/2.1}type='uml:Class']"):
         
-        componentId = packagedElement.get('{http://schema.omg.org/spec/XMI/2.1}id')    
-        componentName = packagedElement.get('name')
-        componentType = packagedElement.get('{http://schema.omg.org/spec/XMI/2.1}type')
+        componentId = ownedComponent.get('{http://schema.omg.org/spec/XMI/2.1}id')    
+        componentName = ownedComponent.get('name')
+        componentType = ownedComponent.get('{http://schema.omg.org/spec/XMI/2.1}type')
         
         # add to database
         c = component(componentId, componentName, componentType, modelId)
@@ -208,7 +208,7 @@ def findComponentsStar(root, modelId):
         findOwnedMembersStar(root, componentId)
 
 def findModelStar(root):
-    for model in root.findall(".//packagedElement/[@{http://schema.omg.org/spec/XMI/2.1}type='uml:Model']"):
+    for model in root.findall(".//ownedComponent/[@{http://schema.omg.org/spec/XMI/2.1}type='uml:Model']"):
     # for model in root.findall('UML:Model')
         modelId = model.get('{http://schema.omg.org/spec/XMI/2.1}id')
         modelName = model.get('name')
@@ -222,12 +222,48 @@ def findModelStar(root):
         findComponentsStar(root, modelId)
 
 # function to find foreign key based on found id in model
-def find(list, filter):
+def findRelated(list, filter):
     for x in list:
         if filter(x):
             return x
     print("no foreign key found\n")
     return False
+
+def findAllRelated(list, filter):
+    related = []
+    for x in list:
+        if filter(x):
+            related.append(x)
+    return related
+
+def findOperation(componentRoot, component, modelId):
+    for ownedOperation in componentRoot.findall(".//UML:Operation", namespaces):
+
+        operationId = ownedOperation.get('xmi.id')
+        operationName = ownedOperation.get('name')
+        operationVisibility = ownedOperation.get('visibility')
+        if not operationVisibility:
+            operationVisibility = "N/A"
+
+        o = operation(operationid = operationId, name = operationName, type = "N/A", 
+                        visibility = operationVisibility, ownerid = component)
+        
+        operations.append(o)
+
+def findAttribute(componentRoot, component, modelId):
+    for ownedAttribute in componentRoot.findall(".//UML:Attribute", namespaces):
+
+        attributeId = ownedAttribute.get('xmi.id')
+        attributeName = ownedAttribute.get('name')
+        attributeVisibility = ownedAttribute.get('visibility')
+        if not attributeVisibility:
+            attributeVisibility = "N/A"
+
+        a = attribute(attributeid = attributeId, name = attributeName, type = "N/A", 
+                        datatype = "N/A", visibility = attributeVisibility, ownerid= component)
+        
+        attributes.append(a)
+
 
 # Methods to parse and save from PlantUML staruml-xmi export
 def findRelation(root, modelId):
@@ -237,8 +273,9 @@ def findRelation(root, modelId):
         relationId = ownedRelation.get('xmi.id')
         relationName = ownedRelation.get('name')
         relationType = 'generalization'
-        relationSource = find(components, lambda x: x.componentid == ownedRelation.get('child'))
-        relationTarget = find(components, lambda x: x.componentid == ownedRelation.get('parent'))
+
+        relationSource = findRelated(components, lambda x: x.componentid == ownedRelation.get('child'))
+        relationTarget = findRelated(components, lambda x: x.componentid == ownedRelation.get('parent'))
         
         r = relation(relationid = relationId, name = relationName, type = relationType, source = relationSource, target = relationTarget)    
         relations.append(r)
@@ -256,24 +293,31 @@ def findRelation(root, modelId):
             if (count == 0):
                 if (relationName == ""):
                     relationName = relationEnd.get('aggregation')
-                relationTarget = find(components, lambda x: x.componentid == relationEnd.get('type'))
+                relationTarget = findRelated(components, lambda x: x.componentid == relationEnd.get('type'))
             else:
-                relationSource = find(components, lambda x: x.componentid == relationEnd.get('type'))
+                relationSource = findRelated(components, lambda x: x.componentid == relationEnd.get('type'))
             count = 1
-
+        
         r = relation(relationid = relationId, name = relationName, type = relationType, source = relationSource, target = relationTarget)
         relations.append(r)
 
+    
+
 
 def findComponents(root, modelId, foreignKey):
-    for packagedElement in root.findall(".//UML:Class/[@namespace='" + modelId + "']", namespaces):
-
-        componentId = packagedElement.get('xmi.id')    
-        componentName = packagedElement.get('name')
-        componentType = 'class'
+    # for ownedComponent in root.findall(".//UML:Class/[@namespace='" + modelId + "']", namespaces):
+    for ownedComponent in root.findall(".//UML:Class", namespaces):
         
+        componentId = ownedComponent.get('xmi.id')    
+        componentName = ownedComponent.get('name')
+        componentType = 'class'
+
         c = component(componentid = componentId, name =  componentName, type = componentType, modelid = foreignKey)
         components.append(c)
+
+        # find associated attributes/operations
+        findAttribute(ownedComponent, c, modelId)
+        findOperation(ownedComponent, c, modelId)
 
 
 def findModel(root, modelfile):
@@ -286,36 +330,36 @@ def findModel(root, modelfile):
         modelrepresentations.append(m)
 
         # find associated components
-        findComponents(root, modelId, m)
+        findComponents(model, modelId, m)
         # findComponents(root, modelId, m.id)
-        findRelation(root, modelId)
+        findRelation(model, modelId)
 
 
 # add the objects to the db in the correct order to avoid any foreign key constraint fails
 def saveToDatabase():
     print("saving to database..\n")
-    # for m in modelrepresentations:
-        # print(m)
-        # m.save()
+    for m in modelrepresentations:
+        print(m)
+        m.save()
         
     for c in components:
-        # print(c)
+        print(c)
         c.save()
 
     for a in attributes:
-        # print(a)
+        print(a)
         a.save()
     
     for o in operations:
-        # print(o)
+        print(o)
         o.save()
     
     for p in parameters:
-        # print(p)
+        print(p)
         p.save()
     
     for r in relations:
-        # print(r)
+        print(r)
         r.save()
 
     # clear arrays
@@ -329,15 +373,9 @@ def saveToDatabase():
 def initiateUmlFile(modelfile):
     # tree = ET.parse(filename)
     # root = tree.getroot()
-    modelrepresentations.clear()
-    components.clear()
-    attributes.clear()
-    operations.clear()
-    parameters.clear()
-    relations.clear()
-
 
     root = etree.parse("webapp/media/" + modelfile.file.name)
+    # root = etree.parse("webapp/media/" + modelfile.file.name)
 
     findModel(root, modelfile)
     # findModelStar(root)

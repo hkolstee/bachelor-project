@@ -7,14 +7,29 @@
 {% block content %}
 
 <h1>All Models:</h1>
-{% if model_list %}
-    <ul>
-    {% for modelrepresentation in model_list %}
-        <li><a href="{% url 'webapp:detail' modelrepresentation.id %}">{{ modelrepresentation.name }}: {{ modelrepresentation.id }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No models are available.</p>
-{% endif %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Model</th>
+            <th>File</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if model_list %}
+            {% for modelrepresentation in model_list %}
+            <tr>
+                <td>
+                    <a href="{% url 'webapp:detail' modelrepresentation.id %}"> {{modelrepresentation.name}} </a>
+                </td>
+                <td>
+                    {{ modelrepresentation.file}}
+                </td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <p>No models are available.</p>
+        {% endif %} 
+    </tbody>
+</table>
 
 {% endblock %} 
