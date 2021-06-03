@@ -29,9 +29,11 @@ namespaces = {
 class modelfile(models.Model):
     name = models.CharField(max_length = 100)
     file = models.FileField(upload_to='')
-
-    def __str__(self):
-        return self.name
+    # description = models.TextField(null=True, blank=True)
+    
+    # def delete(self, *args, **kwargs):
+    #     self.file.delete()
+    #     super().delete(*args, **kwargs)
 
 class modelrepresentation(models.Model):
     # Used as PK in database
@@ -40,6 +42,11 @@ class modelrepresentation(models.Model):
     modelid = models.CharField(max_length = 45)
     name = models.CharField(max_length = 100)
     file = models.OneToOneField(modelfile, on_delete=models.CASCADE)
+    description = models.TextField(null=True, blank=True)
+    
+    def delete(self, *args, **kwargs):
+        self.file.delete()
+        super().delete(*args, **kwargs)
 
 class component(models.Model):
     componentid = models.CharField(max_length=20)

@@ -1,7 +1,5 @@
 from django.urls import path
 from . import views
-# from django.conf import settings
-# from django.conf.urls.static import static
 
 # used for namespacing applications
 app_name = 'webapp'
@@ -13,18 +11,12 @@ app_name = 'webapp'
 # 4th: name = naming your urls lets you refer to it unambigiously from elsewehere in django (templates)
 urlpatterns = [
     # /webapp
-    # path('', views.index, name='index'),
     path('', views.IndexView.as_view(), name='index'),
     # /webapp/*detail*
-    # path('<str:model_id>/', views.detail, name='detail')
     path('model/<str:pk>/', views.DetailView.as_view(), name='detail'),
     # /webapp/upload
-    # path('upload/', views.upload, name='upload'),
     path('upload/', views.UploadView.as_view(), name='upload'),
-    # path('files/', views.file_list, name='file_list'),
     path('files/', views.FileListView.as_view(), name='file_list'),
+    path('files/<int:pk>/', views.delete_file, name='delete_file'),
+    path('model/<int:pk>/update/', views.UpdateView.as_view(), name='update'),
 ]
-
-
-# if settings.DEBUG:
-    # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

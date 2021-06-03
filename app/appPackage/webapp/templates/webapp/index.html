@@ -2,11 +2,19 @@
 
 {% load static %}
 
-{% block title %} Files Page {% endblock %}
+{% block title %} Index Page {% endblock %}
 
 {% block content %}
 
 <h1>All Models:</h1>
+<!-- {% if model_list %}
+    {% for modelrepresentation in model_list %}
+        <h4><a href="{% url 'webapp:detail' modelrepresentation.id %}"> {{modelrepresentation.name}} - {{ modelrepresentation.file.name}}</a></h4>
+    {% endfor %}
+{% else %}
+    <p>No models are available.</p>
+{% endif %} -->
+
 <table class="table">
     <thead>
         <tr>
@@ -22,7 +30,7 @@
                     <a href="{% url 'webapp:detail' modelrepresentation.id %}"> {{modelrepresentation.name}} </a>
                 </td>
                 <td>
-                    {{ modelrepresentation.file}}
+                    {{ modelrepresentation.file.name}}
                 </td>
             </tr>
             {% endfor %}
@@ -31,5 +39,6 @@
         {% endif %} 
     </tbody>
 </table>
+
 
 {% endblock %} 

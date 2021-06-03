@@ -12,6 +12,7 @@
         <tr>
             <th>Name</th>
             <th>Download</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -20,6 +21,12 @@
             <td>{{ file.name }}</td>
             <td>
                 <a href="{{ file.file.url }}"> {{file.file}} </a>
+            </td>
+            <td>
+                <form method="post" action="{% url 'webapp:delete_file' file.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">Delete File</button>
+                </form>
             </td>
         </tr>
         {% endfor %}

@@ -2,7 +2,12 @@
 
 {% load static %}
 
-{% block title %} Files Page {% endblock %}
+{% load crispy_forms_tags %}
+
+<!-- {% csrf_token %}
+    {{ form|crispy }} -->
+
+{% block title %} Detail Page {% endblock %}
 
 {% block content %}
 
@@ -11,6 +16,16 @@
 <img src="{% static 'webapp/images/graph.svg' %}" class="img-fluid mt-5" alt="Responsive image">
 <br>
 <br>
+
+
+<h4>Description:</h4>
+<p>{{modelrepresentation.description}}</p>
+
+<a href="{% url 'webapp:update' modelrepresentation.id %}" class="btn btn-secondary btn-sm"> Edit description </a>
+<br>
+<br>
+<br>
+
 
 <table class="table">
     <thead>
@@ -86,7 +101,5 @@
 
     </tbody>
 </table>
-
-
 
 {% endblock %} 

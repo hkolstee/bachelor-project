@@ -2,7 +2,9 @@
 
 {% load static %}
 
-{% block title %} Files Page {% endblock %}
+{% load crispy_forms_tags %}
+
+{% block title %} Upload Page {% endblock %}
 
 {% block content %}
 
@@ -10,8 +12,9 @@
 <br>
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Upload</button>
+    {{ form|crispy }}
+    <br>
+    <button class="btn btn-secondary btn-sm" type="submit">Upload</button>
 </form>
 
 {% endblock %} 

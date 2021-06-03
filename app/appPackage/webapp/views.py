@@ -12,16 +12,11 @@ from django.core.files.storage import FileSystemStorage
 import pydot
 # from . import main
 
-from .forms import FileForm
+from .forms import FileForm, ModelRepresentationForm
 
 class IndexView(generic.ListView):
     # Make a list of models in the database sorted alphabetically
     context_object_name = 'model_list'
-
-    # Load the models for each file -> fix in future that it only gets initiated once when uploaded
-    # for f in modelfile.objects.all():
-    #     # initiateUmlFile("webapp/media/" + f.file.name)
-        # initiateUmlFile(f)
 
     # Load template from template folder
     template_name = 'webapp/index.html'
@@ -120,8 +115,11 @@ class DetailView(generic.DetailView):
             else:
                 dot.edge(r.source.name, r.target.name, label=r.name, fontsize="9", fontcolor = "grey")
 
+        # Print the dot source code if desired
         # print(dot.source)
+        # Ranks the components from left to right
         dot.graph_attr['rankdir'] = 'LR'
+        # Render the svg file to display in the detail view
         dot.render('graph', directory='webapp/static/webapp/images', format='svg')
 
         # return context to display in the template
@@ -141,7 +139,24 @@ class UploadView(generic.CreateView):
 
         return super(UploadView,self).form_valid(form)
 
+class UpdateView(generic.UpdateView):
+    template_name = 'update.html'
+    form_class = ModelRepresentationForm
+    queryset = modelrepresentation.objects.all()
+
+    def get_success_url(self):
+        return reverse_lazy('webapp:detail', kwargs={'pk' : self.object.pk})
+    
+
+
 class FileListView(generic.ListView):
     model = modelfile
     template_name = 'file_list.html'
     context_object_name = 'file_list'
+
+def delete_file(request, pk):
+    if request.method == 'POST':
+        file = modelfile.objects.get(id=pk)
+        file.delete()
+    return redirect('webapp:file_list')
+
