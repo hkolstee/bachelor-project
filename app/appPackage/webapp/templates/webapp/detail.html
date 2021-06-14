@@ -21,7 +21,7 @@
 <h4>Description:</h4>
 <p>{{modelrepresentation.description}}</p>
 
-<a href="{% url 'webapp:update' modelrepresentation.id %}" class="btn btn-secondary btn-sm"> Edit description </a>
+<a href="{% url 'webapp:updatedesc' modelrepresentation.id %}" class="btn btn-secondary btn-sm"> Edit description </a>
 <br>
 <br>
 <br>
@@ -42,9 +42,24 @@
             <td>
                 <ul>
                     {% for c in component_list.all %}
-                        <li>Name: {{ c.name }} <br> 
-                            ID: {{ c.id }} <br>
-                            Type: {{ c.type }}
+                        <li>{{ c.name }}<br> 
+                            {% if c.id in annotated_components %}
+                                {% for a in annotation_list %}
+                                    {% if a.ownerid == c %}
+                                        <a href="{% url 'webapp:updateanno' a.id %}" class="btn btn-success btn-sm"> Update Annotation </a>
+                                        <br>
+                                        <form method="post" action="{% url 'webapp:delete_anno' a.pk %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm">Delete Annotation</button>
+                                        </form>
+                                    {% endif %}
+                                    <!-- <a href="{% url 'webapp:createanno' c.id %}" class="btn btn-success btn-sm"> Add Annotation </a> -->
+                                    <!-- ID: {{ c.id }} <br> -->
+                                    <!-- Type: {{ c.type }} -->
+                                {% endfor %}
+                            {% else %}
+                                <a href="{% url 'webapp:createanno' c.id %}" class="btn btn-secondary btn-sm"> Add Annotation </a>
+                            {% endif %}
                         </li>
                     {% endfor %}
                 </ul>
@@ -53,10 +68,10 @@
                 <ul>
                     {% for a in attribute_list.all %}
                         <li>Name: {{ a.name }} </li> 
-                            ID: {{ a.id }} <br>
-                            Type: {{ a.type }} <br> 
-                            DataType: {{ a.datatype }} <br> 
-                            Owner ID: {{ a.ownerid}} <br>
+                            <!-- ID: {{ a.id }} <br> -->
+                            <!-- Type: {{ a.type }} <br>  -->
+                            <!-- DataType: {{ a.datatype }} <br>  -->
+                            Owner: {{ a.ownerid.name }} <br>
                         </li>
                     {% endfor %}
                 </ul>
@@ -65,10 +80,10 @@
                 <ul>
                     {% for o in operation_list.all %}
                         <li>Name: {{ o.name }} <br>
-                            ID: {{ o.id }} <br>
-                            Type: {{ o.type }} <br> 
-                            Visibility: {{ o.visibility}} <br> 
-                            Owner ID: {{ o.ownerid }}
+                            <!-- ID: {{ o.id }} <br> -->
+                            <!-- Type: {{ o.type }} <br>  -->
+                            <!-- Visibility: {{ o.visibility}} <br>  -->
+                            Owner: {{ o.ownerid.name }}
                         </li>
                     {% endfor %}
                 </ul>
@@ -77,10 +92,10 @@
                 <ul>
                     {% for p in parameter_list.all %}
                         <li>Name: {{ p.name }} <br>
-                            ID: {{ p.id }} <br>
-                            Direction: {{ p.direction }} <br> 
-                            Type: {{ p.type }} <br>
-                            Owner ID: {{ p.ownerid }}
+                            <!-- ID: {{ p.id }} <br> -->
+                            <!-- Direction: {{ p.direction }} <br>  -->
+                            <!-- Type: {{ p.type }} <br> -->
+                            <!-- Owner ID: {{ p.ownerid }} -->
                         </li>
                     {% endfor %}
                 </ul>
@@ -89,10 +104,10 @@
                 <ul>
                     {% for r in relation_list.all %}
                         <li>Name: {{ r.name }} <br>
-                            ID: {{ r.id }} <br>
+                            <!-- ID: {{ r.id }} <br> -->
                             Type: {{ r.type }} <br> 
-                            Source: {{ r.source }} <br> 
-                            Target: {{ r.target }}
+                            Source: {{ r.source.name }} <br> 
+                            Target: {{ r.target.name }}
                         </li>
                     {% endfor %}
                 </ul>

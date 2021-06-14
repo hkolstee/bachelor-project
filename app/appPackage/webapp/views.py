@@ -10,9 +10,10 @@ from graphviz import Digraph, Graph, nohtml
 from django.urls import reverse_lazy
 from django.core.files.storage import FileSystemStorage
 import pydot
+import re
 # from . import main
 
-from .forms import FileForm, ModelRepresentationForm
+from .forms import FileForm, ModelRepresentationForm, AnnotationForm
 
 class IndexView(generic.ListView):
     # Make a list of models in the database sorted alphabetically
@@ -29,7 +30,7 @@ class DetailView(generic.DetailView):
     model = modelrepresentation;
     template_name = 'webapp/detail.html'
 
-
+    # long function, todo: seperating into smaller sub functions
     def get_context_data(self, *args, **kwargs):
         # get primary key of the detailview
         pk = self.kwargs['pk']
@@ -41,6 +42,12 @@ class DetailView(generic.DetailView):
         operationList = operation.objects.none()
         parameterList = parameter.objects.none()
         relationList = relation.objects.none()
+        annotationList= annotation.objects.none()
+        # To keep track which components have an annotation allready and which don't
+        # Important because there is no other way to know which link to call for the button
+        #   of a component
+        #   -> update or create annotation
+        annotatedComponents = []
 
         # get list of components which have the current model as foreign key
         context['component_list'] = component.objects.filter(modelid=pk)
@@ -52,14 +59,16 @@ class DetailView(generic.DetailView):
         if context['component_list']:
             for c in context['component_list']:
                 # print(c)
-                attributeList = attributeList | attribute.objects.filter(ownerid=c.id)
-                operationList = operationList | operation.objects.filter(ownerid=c.id)
-                relationList = relationList | relation.objects.filter(source=c.id)
+                attributeList = attributeList | attribute.objects.filter(ownerid=c)
+                operationList = operationList | operation.objects.filter(ownerid=c)
+                relationList = relationList | relation.objects.filter(source=c)
+                annotationList = annotationList | annotation.objects.filter(ownerid=c)
 
         # add to context
         context['attribute_list'] = attributeList
         context['operation_list'] = operationList
         context['relation_list'] = relationList
+        context['annotation_list'] = annotationList
 
         # get the list of parameters which have any of the operations in this 
         #   model as foreign key. We first make sure the QuerySet is not empty.
@@ -80,6 +89,7 @@ class DetailView(generic.DetailView):
             # Find all attributes/operations that this object owns using a function defined in models.py
             attributes = findAllRelated(context['attribute_list'], lambda x: x.ownerid == c)
             operations = findAllRelated(context['operation_list'], lambda x: x.ownerid == c)
+
             # Create an empty string
             attributeString = ""
             operationString = ""
@@ -104,16 +114,43 @@ class DetailView(generic.DetailView):
                 dot.node(c.name, nohtml('{' + c.name + '}|' + operationString), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
             else:
                 dot.node(c.name, nohtml('{' + c.name + '}|' + attributeString + '|' + operationString), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
-                             
+
+        
 
         # Draw edges for each relation
         # Depending on the type of the relation the name of the specific relation is saved in either the type or the name
         # If the name is empty, it is saved in the type
         for r in context['relation_list']:
             if (r.name == None or r.name == ""):
-                dot.edge(r.source.name, r.target.name, label=r.type, fontsize="9", fontcolor = "grey")
+                if (r.type == "association"):
+                    dot.edge(r.source.name, r.target.name, label=r.type, fontsize="9", fontcolor = "grey", arrowhead="none")
+                else:
+                    dot.edge(r.source.name, r.target.name, label=r.type, fontsize="9", fontcolor = "grey")
             else:
-                dot.edge(r.source.name, r.target.name, label=r.name, fontsize="9", fontcolor = "grey")
+                if (r.type == "association"):
+                    dot.edge(r.source.name, r.target.name, label=r.name, fontsize="9", fontcolor = "grey", arrowhead="none")
+                else:
+                    dot.edge(r.source.name, r.target.name, label=r.name, fontsize="9", fontcolor = "grey")
+
+        # Draw edges for each annotation
+        for a in context['annotation_list']:
+            # print(repr(a.content))
+            # safe a list of component ids who allready have an annotation, used in template for update/delete button instead of create button
+            annotatedComponents.append(a.ownerid.id)
+
+            # Some function to insert a newline every 64 characters, does not work as nice as I would like it to
+            # a.content = re.sub("(.{64})", "\\1\n", a.content, 0, re.DOTALL)
+
+            # make the content string be left alligned in the annotation
+            content = a.content.replace("\n", "\l")
+            content += "\l"
+            
+            # Create node and edge for annotation
+            dot.node(str(a.id), content, shape="note", style="filled", fillcolor="khaki1", color="khaki4", fontcolor="khaki4", fontname="Helvetica", fontsize="11")
+            dot.edge(str(a.id), a.ownerid.name, style="dotted", arrowhead = "none", color="grey")
+
+        # add list of annotated component ids to context
+        context['annotated_components'] = annotatedComponents
 
         # Print the dot source code if desired
         # print(dot.source)
@@ -139,13 +176,38 @@ class UploadView(generic.CreateView):
 
         return super(UploadView,self).form_valid(form)
 
-class UpdateView(generic.UpdateView):
-    template_name = 'update.html'
+class UpdateDescView(generic.UpdateView):
+    template_name = 'updatedesc.html'
     form_class = ModelRepresentationForm
     queryset = modelrepresentation.objects.all()
 
     def get_success_url(self):
         return reverse_lazy('webapp:detail', kwargs={'pk' : self.object.pk})
+        
+
+class CreateAnnoView(generic.CreateView):
+    template_name = 'createanno.html'
+    form_class = AnnotationForm
+    queryset = annotation.objects.all()
+
+    def form_valid(self, form):
+        # Create form with a foreign key requires setting of the foreign key with this code
+        annotation = form.save(commit=False)
+        annotation.ownerid = component.objects.get(id=self.kwargs.get('pk'))
+        return super(CreateAnnoView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('webapp:detail', kwargs={'pk' : self.object.ownerid.modelid.pk})
+
+
+
+class UpdateAnnoView(generic.UpdateView):
+    template_name = 'updateanno.html'
+    form_class = AnnotationForm
+    queryset = annotation.objects.all()
+
+    def get_success_url(self):
+        return reverse_lazy('webapp:detail', kwargs={'pk' : self.object.ownerid.modelid.pk})
     
 
 
@@ -159,4 +221,12 @@ def delete_file(request, pk):
         file = modelfile.objects.get(id=pk)
         file.delete()
     return redirect('webapp:file_list')
+
+def delete_anno(request, pk):
+    if request.method == 'POST':
+
+        anno = annotation.objects.get(id=pk)
+        redirectModelId = anno.ownerid.modelid.id
+        anno.delete()
+    return redirect('webapp:detail',  pk=redirectModelId)
 

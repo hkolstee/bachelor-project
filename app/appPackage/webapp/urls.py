@@ -18,5 +18,8 @@ urlpatterns = [
     path('upload/', views.UploadView.as_view(), name='upload'),
     path('files/', views.FileListView.as_view(), name='file_list'),
     path('files/<int:pk>/', views.delete_file, name='delete_file'),
-    path('model/<int:pk>/update/', views.UpdateView.as_view(), name='update'),
+    path('model/deleteanno/<int:pk>/', views.delete_anno, name='delete_anno'),
+    path('model/<int:pk>/updatedesc/', views.UpdateDescView.as_view(), name='updatedesc'),
+    path('model/<int:pk>/updateanno/', views.UpdateAnnoView.as_view(), name='updateanno'),
+    path('model/<int:pk>/createanno/', views.CreateAnnoView.as_view(), name='createanno'),
 ]

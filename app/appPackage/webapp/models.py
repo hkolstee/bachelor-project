@@ -31,9 +31,9 @@ class modelfile(models.Model):
     file = models.FileField(upload_to='')
     # description = models.TextField(null=True, blank=True)
     
-    # def delete(self, *args, **kwargs):
-    #     self.file.delete()
-    #     super().delete(*args, **kwargs)
+    def delete(self, *args, **kwargs):
+        self.file.delete()
+        super().delete(*args, **kwargs)
 
 class modelrepresentation(models.Model):
     # Used as PK in database
@@ -43,10 +43,6 @@ class modelrepresentation(models.Model):
     name = models.CharField(max_length = 100)
     file = models.OneToOneField(modelfile, on_delete=models.CASCADE)
     description = models.TextField(null=True, blank=True)
-    
-    def delete(self, *args, **kwargs):
-        self.file.delete()
-        super().delete(*args, **kwargs)
 
 class component(models.Model):
     componentid = models.CharField(max_length=20)
@@ -54,6 +50,12 @@ class component(models.Model):
     name = models.CharField(max_length = 100)
     type = models.CharField(max_length = 100)
     modelid = models.ForeignKey(modelrepresentation, on_delete=models.CASCADE)
+
+class annotation(models.Model):
+    # xposition = models.IntegerField()
+    # yposition = models.IntegerField()
+    content = models.TextField()
+    ownerid = models.OneToOneField(component, on_delete=models.CASCADE)
 
 class attribute(models.Model):
     attributeid = models.CharField(max_length=20)
@@ -233,7 +235,7 @@ def findRelated(list, filter):
     for x in list:
         if filter(x):
             return x
-    print("no foreign key found\n")
+    # print("no foreign key found\n")
     return False
 
 def findAllRelated(list, filter):
@@ -291,20 +293,25 @@ def findRelation(root, modelId):
     for ownedRelation in root.findall(".//UML:Association/[@namespace='" + modelId + "']", namespaces):
         
         relationId = ownedRelation.get('xmi.id')
-        relationType = 'association'
         relationName = ownedRelation.get('name')
+        relationType = "association"
         
         # Two ends of the relation
         count = 0
         for relationEnd in ownedRelation.findall(".//UML:AssociationEnd", namespaces):
             if (count == 0):
-                if (relationName == ""):
+                if (relationName == "" or relationName == None):
                     relationName = relationEnd.get('aggregation')
+                    relationType = relationName
                 relationTarget = findRelated(components, lambda x: x.componentid == relationEnd.get('type'))
             else:
                 relationSource = findRelated(components, lambda x: x.componentid == relationEnd.get('type'))
             count = 1
         
+        # Some cases where the association has no label(name) or type
+        if relationType == None:
+            relationType = ""
+
         r = relation(relationid = relationId, name = relationName, type = relationType, source = relationSource, target = relationTarget)
         relations.append(r)
 
