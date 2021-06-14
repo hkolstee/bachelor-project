@@ -199,8 +199,6 @@ class CreateAnnoView(generic.CreateView):
     def get_success_url(self):
         return reverse_lazy('webapp:detail', kwargs={'pk' : self.object.ownerid.modelid.pk})
 
-
-
 class UpdateAnnoView(generic.UpdateView):
     template_name = 'updateanno.html'
     form_class = AnnotationForm
@@ -208,8 +206,6 @@ class UpdateAnnoView(generic.UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('webapp:detail', kwargs={'pk' : self.object.ownerid.modelid.pk})
-    
-
 
 class FileListView(generic.ListView):
     model = modelfile
