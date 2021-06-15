@@ -91,7 +91,7 @@ class relation(models.Model):
     target = models.ForeignKey(component, on_delete=models.CASCADE, related_name='target')
 
 # METHODS For saving XMLfile
-# Methods to parse and save from starUML 3 export
+####### Methods to parse and save from starUML 3 export
 def findAttributesStar(root, componentId):
     for ownedAttribute in root.findall(".//*[@{http://schema.omg.org/spec/XMI/2.1}id='" + componentId + "']/ownedAttribute"):
         
@@ -252,9 +252,9 @@ def findOperation(componentRoot, component, modelId):
         operationName = ownedOperation.get('name')
         operationVisibility = ownedOperation.get('visibility')
         if not operationVisibility:
-            operationVisibility = "N/A"
+            operationVisibility = ""
 
-        o = operation(operationid = operationId, name = operationName, type = "N/A", 
+        o = operation(operationid = operationId, name = operationName, type = "", 
                         visibility = operationVisibility, ownerid = component)
         
         operations.append(o)
@@ -266,10 +266,10 @@ def findAttribute(componentRoot, component, modelId):
         attributeName = ownedAttribute.get('name')
         attributeVisibility = ownedAttribute.get('visibility')
         if not attributeVisibility:
-            attributeVisibility = "N/A"
+            attributeVisibility = ""
 
-        a = attribute(attributeid = attributeId, name = attributeName, type = "N/A", 
-                        datatype = "N/A", visibility = attributeVisibility, ownerid= component)
+        a = attribute(attributeid = attributeId, name = attributeName, type = "", 
+                        datatype = "", visibility = attributeVisibility, ownerid= component)
         
         attributes.append(a)
 
@@ -315,8 +315,6 @@ def findRelation(root, modelId):
         r = relation(relationid = relationId, name = relationName, type = relationType, source = relationSource, target = relationTarget)
         relations.append(r)
 
-    
-
 
 def findComponents(root, modelId, foreignKey):
     # for ownedComponent in root.findall(".//UML:Class/[@namespace='" + modelId + "']", namespaces):
@@ -351,29 +349,29 @@ def findModel(root, modelfile):
 
 # add the objects to the db in the correct order to avoid any foreign key constraint fails
 def saveToDatabase():
-    print("saving to database..\n")
+    # print("saving to database..\n")
     for m in modelrepresentations:
-        print(m)
+        # print(m)
         m.save()
         
     for c in components:
-        print(c)
+        # print(c)
         c.save()
 
     for a in attributes:
-        print(a)
+        # print(a)
         a.save()
     
     for o in operations:
-        print(o)
+        # print(o)
         o.save()
     
     for p in parameters:
-        print(p)
+        # print(p)
         p.save()
     
     for r in relations:
-        print(r)
+        # print(r)
         r.save()
 
     # clear arrays
@@ -385,14 +383,13 @@ def saveToDatabase():
     relations.clear()
 
 def initiateUmlFile(modelfile):
-    # tree = ET.parse(filename)
-    # root = tree.getroot()
 
     root = etree.parse("webapp/media/" + modelfile.file.name)
-    # root = etree.parse("webapp/media/" + modelfile.file.name)
 
     findModel(root, modelfile)
+    
     # findModelStar(root)
+    
     saveToDatabase()
 
     

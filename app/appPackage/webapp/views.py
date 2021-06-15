@@ -25,7 +25,210 @@ class IndexView(generic.ListView):
     def get_queryset(self):
         return modelrepresentation.objects.order_by('name')
 
+###### detail view functions
+# Gets all elements that are associated with the current detailViews model primary key
+def getElements(context, modelPrimaryKey):
+    # create empty QuerySets
+    attributeList = attribute.objects.none()
+    operationList = operation.objects.none()
+    parameterList = parameter.objects.none()
+    relationList = relation.objects.none()
+    annotationList= annotation.objects.none()
 
+    # get list of components which have the current model as foreign key
+    context['component_list'] = component.objects.filter(modelid=modelPrimaryKey)
+    
+    # get list of attr/oper/rela that have any of the components in this
+    #   model as foreign key. 
+    # The union ("|") operator combines two querysets.
+    # We first check if the QuerySet is not empty.
+    if context['component_list']:
+        for c in context['component_list']:
+            # print(c)
+            attributeList = attributeList | attribute.objects.filter(ownerid=c)
+            operationList = operationList | operation.objects.filter(ownerid=c)
+            relationList = relationList | relation.objects.filter(source=c)
+            annotationList = annotationList | annotation.objects.filter(ownerid=c)
+
+    # add to context
+    context['attribute_list'] = attributeList
+    context['operation_list'] = operationList
+    context['relation_list'] = relationList
+    context['annotation_list'] = annotationList
+
+    # get the list of parameters which have any of the operations in this 
+    #   model as foreign key. We first make sure the QuerySet is not empty.
+    if context['operation_list']:
+        for o in context['operation_list']:
+            parameterList = parameterList | parameter.objects.filter(ownerid=o.id)
+    
+    # add to context
+    context['parameter_list'] = parameterList
+
+# Creates the graph
+def createGraph():
+    # shape = record means we can add the attribute box / operations box beneath the name in the graph
+    graph = Digraph('graph', node_attr={'shape': 'record', 'height': '.01'})
+
+    return graph
+
+# Function to create a string of the operations with their parameters
+#   in the format: method(type1 param1, type2 param2, ...): type3 param3, type4 param4, ... 
+def formatOperationString(context, operations):
+    # Create empty string
+    operationString = ""
+
+    for o in operations:
+        operationString = operationString + o.name
+        # find all related parameters and format them into the string of the operation
+        parameters = findAllRelated(context['parameter_list'], lambda x: x.ownerid == o)
+
+        count = 0
+        for p in parameters:
+                
+            if p.direction == "in":
+                # For multiple parameters that go into the operation 
+                # first parameter in -> add "(", else add ", "
+                if count == 0:
+                    operationString = operationString + "("
+                else:
+                    operationString = operationString + ", "
+
+                # add type if available
+                if p.type != "" or None:
+                    operationString = operationString + p.type + " " + p.name
+                else:
+                    operationString = operationString + p.name
+                count = 1
+            operationString = operationString + ")"
+
+        # For out parameters, multiple parameters is also allowed
+        count = 0
+        for p in parameters:
+            if p.direction == "out":
+                # first parameter out -> add ":", else add ", "
+                if count == 0:
+                    operationString = operationString + ": "
+                else:
+                    operationString = operationString + ", "
+
+                # add type if available
+                if p.type != "" or None:
+                    operationString = operationString + p.type + " " + p.name
+                else:
+                    operationString = operationString + p.name
+            # increment count
+            count = 1
+
+        # Create newline for next operation
+        operationString = operationString + "\l"
+
+    return operationString
+
+# Adds components to the graph, this included associated operations + paramters, and attributes
+def addComponentsToGraph(context, graph):
+    # Add a node for each component
+    for c in context['component_list']:
+        # Find all attributes/operations that this object owns using a function defined in models.py
+        attributes = findAllRelated(context['attribute_list'], lambda x: x.ownerid == c)
+        operations = findAllRelated(context['operation_list'], lambda x: x.ownerid == c)
+
+        # Create an empty string
+        attributeString = ""
+        
+        # For each attribute/operation that this component owns, add information to the string (+ newline)
+        for a in attributes:
+            # Add type if available
+            if a.type != "":
+                attributeString = attributeString + a.type + " " + a.name + "\l"
+            else:
+                attributeString = attributeString + a.name + "\l"
+                
+        # seperate function for formatting the operations string with parameters
+        operationString = formatOperationString(context, operations)
+
+        # replace <,> by \<,\> to prevent bad label error in the nohtml() call
+        attributeString = attributeString.replace("<", "\<")
+        attributeString = attributeString.replace(">", "\>")
+        operationString = operationString.replace("<", "\<")
+        operationString = operationString.replace(">", "\>")
+
+        # Create the node with its attributes and operations in seperate sections
+        if attributeString == "" and operationString == "":
+            graph.node(c.name, nohtml(c.name), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
+        elif operationString == "":
+            graph.node(c.name, nohtml('{' + c.name + '}|' + attributeString), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
+        elif attributeString == "":
+            graph.node(c.name, nohtml('{' + c.name + '}|' + operationString), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
+        else:
+            graph.node(c.name, nohtml('{' + c.name + '}|' + attributeString + '|' + operationString), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
+
+    return graph
+
+# Adds relations to the graph
+def addRelationsToGraph(context, graph):
+    # Draw edges for each relation
+    # Depending on the type of the relation the name of the specific relation is saved in either the type or the name
+    # If the name is empty, it is saved in the type
+    for r in context['relation_list']:
+        if (r.name == None or r.name == ""):
+            if (r.type == "association"):
+                graph.edge(r.source.name, r.target.name, label=r.type, fontsize="9", fontcolor = "grey", arrowhead="none")
+            else:
+                graph.edge(r.source.name, r.target.name, label=r.type, fontsize="9", fontcolor = "grey")
+        else:
+            if (r.type == "association"):
+                graph.edge(r.source.name, r.target.name, label=r.name, fontsize="9", fontcolor = "grey", arrowhead="none")
+            else:
+                graph.edge(r.source.name, r.target.name, label=r.name, fontsize="9", fontcolor = "grey")
+
+    return graph
+
+# Adds annotations to the graph
+def addAnnotationsToGraph(context, graph):
+    # To keep track which components have an annotation allready and which don't
+    # Important because there is no other way to know which button to create in 
+    #   the template.
+    #   -> update/delete or create annotation buttons
+    annotatedComponents = []
+
+    # Draw edges for each annotation
+    for a in context['annotation_list']:
+        # print(repr(a.content))
+        # safe a list of component ids who allready have an annotation, used in template for update/delete button instead of create button
+        annotatedComponents.append(a.ownerid.id)
+
+        # Some function to insert a newline every 64 characters, does not work as nice as I would like it to
+        # a.content = re.sub("(.{64})", "\\1\n", a.content, 0, re.DOTALL)
+
+        # make the content string be left alligned in the annotation
+        content = a.content.replace("\n", "\l")
+        content += "\l"
+        
+        # Create node and edge for annotation
+        graph.node(str(a.id), content, shape="note", style="filled", fillcolor="khaki1", color="khaki4", fontcolor="khaki4", fontname="Helvetica", fontsize="11")
+        graph.edge(str(a.id), a.ownerid.name, style="dotted", arrowhead = "none", color="grey")
+        
+    # add list of annotated component ids to context
+    context['annotated_components'] = annotatedComponents
+
+    # test annotation
+    # graph.node("testnode", "This is a test annotation without any relations\l\l\l\l\l\l\l\l\l\l\l\l\lend of test annotation", 
+    #             pos="0,0" ,shape="note", style="filled", fillcolor="cadetblue1", color="cyan4", fontcolor="cyan4", fontname="Helvetica", fontsize="11")
+
+    return graph
+
+# Renders the graph to a SVG file in webapp/static/webapp/images/graph.svg
+def renderGraph(graph):
+    # Print the graph source dot code if desired
+    # print(graph.source)
+    # Ranks the components from left to right
+    graph.graph_attr['rankdir'] = 'LR'
+    # Render the svg file to display in the detail view
+    graph.render('graph', directory='webapp/static/webapp/images', format='svg')
+
+# Detailed view of a model, includes graph image, description, list of elements. 
+# Users can edit description/annotations in this view aswell
 class DetailView(generic.DetailView):
     model = modelrepresentation;
     template_name = 'webapp/detail.html'
@@ -33,131 +236,28 @@ class DetailView(generic.DetailView):
     # long function, todo: seperating into smaller sub functions
     def get_context_data(self, *args, **kwargs):
         # get primary key of the detailview
-        pk = self.kwargs['pk']
+        modelPrimaryKey = self.kwargs['pk']
         
+        # Get context so we can add more data to it
         context = super(DetailView, self).get_context_data(*args, **kwargs)
         
-        # create empty QuerySets
-        attributeList = attribute.objects.none()
-        operationList = operation.objects.none()
-        parameterList = parameter.objects.none()
-        relationList = relation.objects.none()
-        annotationList= annotation.objects.none()
-        # To keep track which components have an annotation allready and which don't
-        # Important because there is no other way to know which link to call for the button
-        #   of a component
-        #   -> update or create annotation
-        annotatedComponents = []
-
-        # get list of components which have the current model as foreign key
-        context['component_list'] = component.objects.filter(modelid=pk)
-        
-        # get list of attr/oper/rela that have any of the components in this
-        #   model as foreign key. 
-        # The union ("|") operator combines two querysets.
-        # We first check if the QuerySet is not empty.
-        if context['component_list']:
-            for c in context['component_list']:
-                # print(c)
-                attributeList = attributeList | attribute.objects.filter(ownerid=c)
-                operationList = operationList | operation.objects.filter(ownerid=c)
-                relationList = relationList | relation.objects.filter(source=c)
-                annotationList = annotationList | annotation.objects.filter(ownerid=c)
-
-        # add to context
-        context['attribute_list'] = attributeList
-        context['operation_list'] = operationList
-        context['relation_list'] = relationList
-        context['annotation_list'] = annotationList
-
-        # get the list of parameters which have any of the operations in this 
-        #   model as foreign key. We first make sure the QuerySet is not empty.
-        if context['operation_list']:
-            for o in context['operation_list']:
-                parameterList = parameterList | parameter.objects.filter(ownerid=o.id)
-        
-        # add to context
-        context['parameter_list'] = parameterList
+        # Get all elements in the current model, put them into context to display in the template
+        getElements(context, modelPrimaryKey)
 
         # Create the graph image
-        # shape = record means we can add the attribute box / operations box beneath the name in the graph
-        dot = Digraph('dot', node_attr={'shape': 'record', 'height': '.01'})
-        dot.attr(style="filled", fillcolor=".7 .3 1.0", color=".5 .15 1.0")
+        graph = createGraph()
 
-        # Add a node for each component
-        for c in context['component_list']:
-            # Find all attributes/operations that this object owns using a function defined in models.py
-            attributes = findAllRelated(context['attribute_list'], lambda x: x.ownerid == c)
-            operations = findAllRelated(context['operation_list'], lambda x: x.ownerid == c)
+        # Add components to the graph
+        graph = addComponentsToGraph(context, graph)
 
-            # Create an empty string
-            attributeString = ""
-            operationString = ""
-            # For each attribute/operation that this component owns, add information to the string (+ newline)
-            for a in attributes:
-                attributeString = attributeString + a.name + "\l"
-            for o in operations:
-                operationString = operationString + o.name + "\l"
+        # Add edges(relations) to the graph
+        graph = addRelationsToGraph(context, graph)
 
-            # replace <,> by \<,\> to prevent bad label error in the nohtml() call
-            attributeString = attributeString.replace("<", "\<")
-            attributeString = attributeString.replace(">", "\>")
-            operationString = operationString.replace("<", "\<")
-            operationString = operationString.replace(">", "\>")
+        # Check which components have annotations, and add them to the graph
+        graph = addAnnotationsToGraph(context, graph)
 
-            # Create the node with its attributes and operations in seperate sections
-            if attributeString == "" and operationString == "":
-                dot.node(c.name, nohtml(c.name), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
-            elif operationString == "":
-                dot.node(c.name, nohtml('{' + c.name + '}|' + attributeString), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
-            elif attributeString == "":
-                dot.node(c.name, nohtml('{' + c.name + '}|' + operationString), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
-            else:
-                dot.node(c.name, nohtml('{' + c.name + '}|' + attributeString + '|' + operationString), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
-
-        
-
-        # Draw edges for each relation
-        # Depending on the type of the relation the name of the specific relation is saved in either the type or the name
-        # If the name is empty, it is saved in the type
-        for r in context['relation_list']:
-            if (r.name == None or r.name == ""):
-                if (r.type == "association"):
-                    dot.edge(r.source.name, r.target.name, label=r.type, fontsize="9", fontcolor = "grey", arrowhead="none")
-                else:
-                    dot.edge(r.source.name, r.target.name, label=r.type, fontsize="9", fontcolor = "grey")
-            else:
-                if (r.type == "association"):
-                    dot.edge(r.source.name, r.target.name, label=r.name, fontsize="9", fontcolor = "grey", arrowhead="none")
-                else:
-                    dot.edge(r.source.name, r.target.name, label=r.name, fontsize="9", fontcolor = "grey")
-
-        # Draw edges for each annotation
-        for a in context['annotation_list']:
-            # print(repr(a.content))
-            # safe a list of component ids who allready have an annotation, used in template for update/delete button instead of create button
-            annotatedComponents.append(a.ownerid.id)
-
-            # Some function to insert a newline every 64 characters, does not work as nice as I would like it to
-            # a.content = re.sub("(.{64})", "\\1\n", a.content, 0, re.DOTALL)
-
-            # make the content string be left alligned in the annotation
-            content = a.content.replace("\n", "\l")
-            content += "\l"
-            
-            # Create node and edge for annotation
-            dot.node(str(a.id), content, shape="note", style="filled", fillcolor="khaki1", color="khaki4", fontcolor="khaki4", fontname="Helvetica", fontsize="11")
-            dot.edge(str(a.id), a.ownerid.name, style="dotted", arrowhead = "none", color="grey")
-
-        # add list of annotated component ids to context
-        context['annotated_components'] = annotatedComponents
-
-        # Print the dot source code if desired
-        # print(dot.source)
-        # Ranks the components from left to right
-        dot.graph_attr['rankdir'] = 'LR'
-        # Render the svg file to display in the detail view
-        dot.render('graph', directory='webapp/static/webapp/images', format='svg')
+        # render the graph to a SVG file
+        renderGraph(graph)
 
         # return context to display in the template
         return context
