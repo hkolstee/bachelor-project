@@ -310,14 +310,6 @@ class UpdateAnnoView(generic.UpdateView):
     form_class = AnnotationForm
     queryset = annotation.objects.all()
 
-    # Save owner in kwargs to display on the page
-    # def get_context_data(self, *args, **kwargs):
-    #     context = super(UpdateAnnoView, self).get_context_data(*args, **kwargs)
-    #     context['owner'] = ownerid
-    #     # self.ownerid = get_object_or_404(context, id=self.kwargs['pk'])
-    #     # kwargs['owner'] = self.ownerid
-    #     return super().get_context_data(**kwargs)
-
     def get_success_url(self):
         return reverse_lazy('webapp:detail', kwargs={'pk' : self.object.ownerid.modelid.pk})
 

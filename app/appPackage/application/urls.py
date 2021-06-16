@@ -26,6 +26,7 @@ from django.conf.urls.static import static
 # 4th: name = naming your urls lets you refer to it unambigiously from elsewehere in django (templates)
 urlpatterns = [
     path('webapp/', include('webapp.urls', namespace='webapp')),
+    path('accounts/', include('accounts.urls', namespace='accounts')),
     path('admin/', admin.site.urls),
 ]
 

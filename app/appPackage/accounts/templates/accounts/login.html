@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block title %} Login Page {% endblock %}
+
+{% block content %}
+
+<h1>Login</h1>
+
+<br>
+<div class="container">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-25">
+                <label>Username</label>
+            </div>
+            <div class="col-75">
+                <input type="text" name="username" placeholder="Your username">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-25">
+                <label>Password</label>
+            </div>
+            <div class="col-75">
+                <input type="password" name="password" placeholder="Your password">
+            </div>
+        </div>
+        <div>
+            <br>
+            <button type="submit" class="btn btn-secondary btn-sm" autofocus="True">Log in</button>
+        </div>
+    </form>
+</div>
+
+<br>
+<div>
+    {% for message in messages %}
+        <p style="color:white; background-color: tomato; border-radius: 5px;">&nbsp;Error: {{ message }} </p>
+    {% endfor %}
+</div>
+
+{% endblock %} 

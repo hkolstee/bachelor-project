@@ -40,6 +40,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'webapp',
+    'accounts',
     'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -68,7 +69,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # 'DIRS': [],
-        'DIRS': [os.path.join(BASE_DIR, 'webapp/templates/webapp')],
+        'DIRS': [os.path.join(BASE_DIR, 'webapp/templates/webapp'),
+                os.path.join(BASE_DIR, 'accounts/templates/accounts')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

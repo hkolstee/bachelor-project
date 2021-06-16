@@ -18,31 +18,36 @@
 
 
 <h1>Index Page:</h1>
-<table allign="right" class="table">
-    <caption>All the models currently in the database.</caption>
-    <thead>
-        <tr>
-            <th>Model</th>
-            <th style="text-align:left">File</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% if model_list %}
-            {% for modelrepresentation in model_list %}
+{% if user.is_authenticated %}
+    <table allign="right" class="table">
+        <caption>All the models currently in the database.</caption>
+        <thead>
             <tr>
-                <td>
-                    <a href="{% url 'webapp:detail' modelrepresentation.id %}"> {{modelrepresentation.name}} </a>
-                </td>
-                <td style="text-align:left">
-                    {{ modelrepresentation.file.name}}
-                </td>
+                <th>Model</th>
+                <th style="text-align:left">File</th>
             </tr>
-            {% endfor %}
-        {% else %}
-            <p>No models are available.</p>
-        {% endif %} 
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% if model_list %}
+                {% for modelrepresentation in model_list %}
+                <tr>
+                    <td>
+                        <a href="{% url 'webapp:detail' modelrepresentation.id %}"> {{modelrepresentation.name}} </a>
+                    </td>
+                    <td style="text-align:left">
+                        {{ modelrepresentation.file.name}}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <p>No models are available.</p>
+            {% endif %} 
+        </tbody>
+    </table>
+{% else %}
+    <hr>
+    <h3 style="color:grey; font-weight: normal;">Log in to see available models.</h3>
+{% endif %}
 
 
 {% endblock %} 

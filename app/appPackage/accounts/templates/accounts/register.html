@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block title %} Register Page {% endblock %}
+
+{% block content %}
+
+<h1>Register an Account</h1>
+
+<br>
+<!-- <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <p>First Name: <input type="text" name="first_name" placeholder="First Name"></p>
+    <p>Last Name: <input type="text" name="last_name" placeholder="Last Name"></p>
+    <p>Username: <input type="text" name="username" placeholder="Username"></p>
+    <p>Email: <input type="email" name="email" placeholder="email"></p>
+    <p>Password: <input type="password" name="password1" placeholder="Password"></p>
+    <p>Confirm Password: <input type="password" name="password2" placeholder="Confirm Password"></p>
+
+    <br>
+    <button type="submit" class="btn btn-secondary btn-sm" autofocus="True">Register</button>
+</form> -->
+
+<div class="container">
+    <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+        <div class="row">
+            <div class="col-25">
+                <label>First Name</label>
+            </div>
+            <div class="col-75">
+                <input type="text" name="first_name" placeholder="Your name">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-25">
+                <label>Last Name</label>
+            </div>
+            <div class="col-75">
+                <input type="text" name="last_name" placeholder="Your last name">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-25">
+                <label>Username</label>
+            </div>
+            <div class="col-75">
+                <input type="text" name="username" placeholder="Your username">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-25">
+                <label>Email</label>
+            </div>
+            <div class="col-75">
+                <input type="email" name="email" placeholder="Your email">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-25">
+                <label>Password</label>
+            </div>
+            <div class="col-75">
+                <input type="password" name="password1" placeholder="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-25">
+                <label>Confirm password</label>
+            </div>
+            <div class="col-75">
+                <input type="password" name="password2" placeholder="">
+            </div>
+        </div>
+        <div>
+            <br>
+            <button type="submit" class="btn btn-secondary btn-sm" autofocus="True">Register</button>
+        </div>
+    </form>
+</div>
+
+<br>
+<div>
+    {% for message in messages %}
+        <p style="color:white; background-color: tomato; border-radius: 5px;">&nbsp;Error: {{ message }} </p>
+    {% endfor %}
+</div>
+
+<br>
+<br>
+
+{% endblock %} 
