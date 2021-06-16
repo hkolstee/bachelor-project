@@ -290,22 +290,11 @@ class CreateAnnoView(generic.CreateView):
     queryset = annotation.objects.all()
     # context['owner'] = component.objects.get(id=self.kwargs.get('pk'))
 
+    # Save owner in kwargs to display on the page
     def get_context_data(self, **kwargs):
         self.ownerid = get_object_or_404(component, id=self.kwargs['pk'])
         kwargs['owner'] = self.ownerid
         return super().get_context_data(**kwargs)
-
-
-    # def get_context_data(self, *args, **kwargs):
-    #     # get primary key of the detailview
-    #     componentPrimaryKey = self.kwargs['pk']
-        
-    #     # Get context so we can add more data to it
-        # context = super(CreateAnnoView, self).get_context_data(*args, **kwargs)
-        # print(context)
-    #     context['owner'] = component.objects.get(id=self.kwargs.get('pk'))
-
-    #     return 
 
     def form_valid(self, form):
         # Create form with a foreign key requires setting of the foreign key with this code
@@ -320,6 +309,14 @@ class UpdateAnnoView(generic.UpdateView):
     template_name = 'updateanno.html'
     form_class = AnnotationForm
     queryset = annotation.objects.all()
+
+    # Save owner in kwargs to display on the page
+    # def get_context_data(self, *args, **kwargs):
+    #     context = super(UpdateAnnoView, self).get_context_data(*args, **kwargs)
+    #     context['owner'] = ownerid
+    #     # self.ownerid = get_object_or_404(context, id=self.kwargs['pk'])
+    #     # kwargs['owner'] = self.ownerid
+    #     return super().get_context_data(**kwargs)
 
     def get_success_url(self):
         return reverse_lazy('webapp:detail', kwargs={'pk' : self.object.ownerid.modelid.pk})

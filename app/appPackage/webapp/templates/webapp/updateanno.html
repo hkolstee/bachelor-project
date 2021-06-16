@@ -8,7 +8,8 @@
 
 {% block content %}
 
-<h1>Edit the Annotation for {{ owner.name }} - {{ owner.id }}</h1>
+<h1>Edit the Annotation for {{ annotation.ownerid.name }} </h1> 
+<p>ID: {{ annotation.ownerid.id }}</p>
 <img src="{% static 'webapp/images/graph.svg' %}" class="img-fluid mt-5" alt="Responsive image">
 
 <br>

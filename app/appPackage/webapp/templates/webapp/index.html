@@ -6,20 +6,24 @@
 
 {% block content %}
 
-<h1>All Models:</h1>
-<!-- {% if model_list %}
+<!-- <h1>All Models:</h1>
+{% if model_list %}
     {% for modelrepresentation in model_list %}
-        <h4><a href="{% url 'webapp:detail' modelrepresentation.id %}"> {{modelrepresentation.name}} - {{ modelrepresentation.file.name}}</a></h4>
+        <h4><a href="{% url 'webapp:detail' modelrepresentation.id %}"> {{modelrepresentation.name}}</a></h4>
+        <p>ID: {{ modelrepresentation.id }} - File: {{ modelrepresentation.file.name}}</p>
     {% endfor %}
 {% else %}
     <p>No models are available.</p>
 {% endif %} -->
 
-<table class="table">
+
+<h1>Index Page:</h1>
+<table allign="right" class="table">
+    <caption>All the models currently in the database.</caption>
     <thead>
         <tr>
             <th>Model</th>
-            <th>File</th>
+            <th style="text-align:left">File</th>
         </tr>
     </thead>
     <tbody>
@@ -29,7 +33,7 @@
                 <td>
                     <a href="{% url 'webapp:detail' modelrepresentation.id %}"> {{modelrepresentation.name}} </a>
                 </td>
-                <td>
+                <td style="text-align:left">
                     {{ modelrepresentation.file.name}}
                 </td>
             </tr>
