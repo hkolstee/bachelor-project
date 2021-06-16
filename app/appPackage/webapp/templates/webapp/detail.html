@@ -4,9 +4,6 @@
 
 {% load crispy_forms_tags %}
 
-<!-- {% csrf_token %}
-    {{ form|crispy }} -->
-
 {% block title %} Detail Page {% endblock %}
 
 {% block content %}
@@ -46,16 +43,13 @@
                             {% if c.id in annotated_components %}
                                 {% for a in annotation_list %}
                                     {% if a.ownerid == c %}
-                                        <a href="{% url 'webapp:updateanno' a.id %}" class="btn btn-success btn-sm"> Update Annotation </a>
+                                        <a href="{% url 'webapp:updateanno' a.id %}" class="btn btn-success btn-sm"> Edit Annotation </a>
                                         <br>
                                         <form method="post" action="{% url 'webapp:delete_anno' a.pk %}">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-danger btn-sm">Delete Annotation</button>
                                         </form>
                                     {% endif %}
-                                    <!-- <a href="{% url 'webapp:createanno' c.id %}" class="btn btn-success btn-sm"> Add Annotation </a> -->
-                                    <!-- ID: {{ c.id }} <br> -->
-                                    <!-- Type: {{ c.type }} -->
                                 {% endfor %}
                             {% else %}
                                 <a href="{% url 'webapp:createanno' c.id %}" class="btn btn-secondary btn-sm"> Add Annotation </a>

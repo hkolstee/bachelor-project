@@ -8,7 +8,7 @@
 
 {% block content %}
 
-<h1>Create a Annotation</h1>
+<h1>Create an Annotation for {{ owner.name }}</h1>
 <img src="{% static 'webapp/images/graph.svg' %}" class="img-fluid mt-5" alt="Responsive image">
 
 <br>
@@ -16,7 +16,7 @@
     {% csrf_token %}
     {{ form|crispy }}
     <br>
-    <button type="submit" autofocus="True">Update</button>
+    <button type="submit" autofocus="True">Create</button>
 </form>
 <br>
 <br>

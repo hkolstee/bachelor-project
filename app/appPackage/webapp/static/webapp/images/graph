@@ -1,19 +1,19 @@
 digraph "graph" {
 	graph [rankdir=LR]
 	node [height=.01 shape=record]
-	PossessionDeck [label="{PossessionDeck}|N/A availablePossessions : list\l|updatePossessionDeck()\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
-	Possession [label="{Possession}|N/A name : str\lN/A type : str\lN/A description : str\lN/A attackModifier : int\lN/A damageModifier : int\lN/A bonusDrawModifier : int\l|removeWounds()\lrepairCheck()\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
-	Ship [label="{Ship}|N/A name : string\lN/A cannons : int\lN/A shields : int\lN/A maneuver : int\lN/A maxPassengers : int\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
-	Companion [label="{Companion}|N/A name : string\lN/A combatBonus : int\lN/A intelligenceBonus : int\lN/A diplomacyBonus : int\lN/A navigationBonus : int\lN/A special : list\l|getSpecial()\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
-	Character [label="{Character}|N/A name : string\lN/A title : string\lN/A combat : int\lN/A endurance : int\lN/A intelligence : int\lN/A leadership : int\lN/A diplomacy : int\lN/A navigation : int\lN/A homePlanet : string\lN/A effectiveCombatRating : int\lN/A wounds : int\lN/A leader : boolean\lN/A detected : boolean\lN/A captured : boolean\lN/A active : boolean\lN/A bonusDraws : list\l|allegiance : string (Rebel or Imperial)\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
-	IrateLocals [label="{IrateLocals}|N/A type : string\lN/A name : string\lN/A combat : int\lN/A endurance : int\lN/A homePlanet : string\lN/A attackType : string\lN/A effectiveCombatRating : int\lN/A wounds : int\l|getType()\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
-	Creatures [label="{Creatures}|N/A combatShift : int\lN/A breakOffModifier : int\lN/A bonusDrawModifier : int\l|getSpecial()\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
-	MilitaryUnit [label="{MilitaryUnit}|N/A type : string\lN/A name : string\lN/A combat : int\lN/A endurance : int\lN/A environType : string\lN/A effectiveCombatRating : int\lN/A wounds : int\l|allegiance : string (Rebel or Imperial)\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
-	AttackerStack [label="{AttackerStack}|N/A attackerType : list\lN/A attackDifferential : dictionary\lN/A attackModifier : list\lN/A currentRound : int\l|attack()\lcapture()\lapplyWounds()\lupdateCombatRating()\lupdateModifiers()\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
-	DefenderStack [label="{DefenderStack}|N/A defenderType : list\lN/A defenseDifferential : dictionary\lN/A defenseModifier : list\l|retaliate()\lbreakOff()\linactive()\lapplyWounds()\lupdateCombatRating()\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
-	MissionGroupStack [label="{MissionGroupStack}|N/A effectiveCombatRating : int\lN/A currentMission : char\lN/A bonusDraws : list\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
-	MissionDeck [label="{MissionDeck}|N/A availableMissions : list\l|updateMissionDeck()\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
-	Mission [label="{Mission}|N/A name : string\lN/A type : char\lN/A description : string\l|actionEventCheck()\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
+	PossessionDeck [label="{PossessionDeck}|availablePossessions : list\l|updatePossessionDeck()\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
+	Possession [label="{Possession}|name : str\ltype : str\ldescription : str\lattackModifier : int\ldamageModifier : int\lbonusDrawModifier : int\l|removeWounds()\lrepairCheck()\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
+	Ship [label="{Ship}|name : string\lcannons : int\lshields : int\lmaneuver : int\lmaxPassengers : int\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
+	Companion [label="{Companion}|name : string\lcombatBonus : int\lintelligenceBonus : int\ldiplomacyBonus : int\lnavigationBonus : int\lspecial : list\l|getSpecial()\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
+	Character [label="{Character}|name : string\ltitle : string\lcombat : int\lendurance : int\lintelligence : int\lleadership : int\ldiplomacy : int\lnavigation : int\lhomePlanet : string\leffectiveCombatRating : int\lwounds : int\lleader : boolean\ldetected : boolean\lcaptured : boolean\lactive : boolean\lbonusDraws : list\l|allegiance : string (Rebel or Imperial)\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
+	IrateLocals [label="{IrateLocals}|type : string\lname : string\lcombat : int\lendurance : int\lhomePlanet : string\lattackType : string\leffectiveCombatRating : int\lwounds : int\l|getType()\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
+	Creatures [label="{Creatures}|combatShift : int\lbreakOffModifier : int\lbonusDrawModifier : int\l|getSpecial()\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
+	MilitaryUnit [label="{MilitaryUnit}|type : string\lname : string\lcombat : int\lendurance : int\lenvironType : string\leffectiveCombatRating : int\lwounds : int\l|allegiance : string (Rebel or Imperial)\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
+	AttackerStack [label="{AttackerStack}|attackerType : list\lattackDifferential : dictionary\lattackModifier : list\lcurrentRound : int\l|attack()\lcapture()\lapplyWounds()\lupdateCombatRating()\lupdateModifiers()\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
+	DefenderStack [label="{DefenderStack}|defenderType : list\ldefenseDifferential : dictionary\ldefenseModifier : list\l|retaliate()\lbreakOff()\linactive()\lapplyWounds()\lupdateCombatRating()\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
+	MissionGroupStack [label="{MissionGroupStack}|effectiveCombatRating : int\lcurrentMission : char\lbonusDraws : list\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
+	MissionDeck [label="{MissionDeck}|availableMissions : list\l|updateMissionDeck()\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
+	Mission [label="{Mission}|name : string\ltype : char\ldescription : string\l|actionEventCheck()\l" color=black fillcolor=lightgrey fontname=Helvetica fontsize=11 style=filled]
 	Possession -> PossessionDeck [label=aggregate fontcolor=grey fontsize=9]
 	Possession -> Character [label=Assigned arrowhead=none fontcolor=grey fontsize=9]
 	Ship -> Possession [label=aggregate fontcolor=grey fontsize=9]
@@ -33,9 +33,8 @@ digraph "graph" {
 	MissionGroupStack -> DefenderStack [label=composite fontcolor=grey fontsize=9]
 	MissionDeck -> MissionGroupStack [label=Selects arrowhead=none fontcolor=grey fontsize=9]
 	MissionDeck -> Mission [label=aggregate fontcolor=grey fontsize=9]
-	10 [label="This is an example annotation\l**\lImportant things:\l- Thing\l- Another Thing\l\lAggregates:\l- Possession\l**\l" color=khaki4 fillcolor=khaki1 fontcolor=khaki4 fontname=Helvetica fontsize=11 shape=note style=filled]
-	10 -> PossessionDeck [arrowhead=none color=grey style=dotted]
-	11 [label="This is an example annotation\l**\lCan create:\l- Creatures\l- IrateLocals\l**\l" color=khaki4 fillcolor=khaki1 fontcolor=khaki4 fontname=Helvetica fontsize=11 shape=note style=filled]
-	11 -> Mission [arrowhead=none color=grey style=dotted]
-	testnode [label="This is a test annotation without any relations\l\l\l\l\l\l\l\l\l\l\l\l\lend of test annotation" color=cyan4 fillcolor=cadetblue1 fontcolor=cyan4 fontname=Helvetica fontsize=11 pos="0,0" shape=note style=filled]
+	12 [label="This is an example annotation\l***\lList of important things:\l- Thing 1\l- Thing 2\l- And thing 3\l\lAggregates:\l- Possesion\l***\l" color=khaki4 fillcolor=khaki1 fontcolor=khaki4 fontname=Helvetica fontsize=11 shape=note style=filled]
+	12 -> PossessionDeck [arrowhead=none color=grey style=dotted]
+	13 [label="This is an example annotation\l***\lCan create:\l- IrateLocals\l- Creatures\l***\l" color=khaki4 fillcolor=khaki1 fontcolor=khaki4 fontname=Helvetica fontsize=11 shape=note style=filled]
+	13 -> Mission [arrowhead=none color=grey style=dotted]
 }

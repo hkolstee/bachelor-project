@@ -96,7 +96,7 @@ def formatOperationString(context, operations):
 
                 # add type if available
                 if p.type != "" or None:
-                    operationString = operationString + p.type + " " + p.name
+                    operationString = operationString + p.name + " : " + p.type
                 else:
                     operationString = operationString + p.name
                 count = 1
@@ -233,7 +233,7 @@ class DetailView(generic.DetailView):
     model = modelrepresentation;
     template_name = 'webapp/detail.html'
 
-    # long function, todo: seperating into smaller sub functions
+    # All graph logic done here
     def get_context_data(self, *args, **kwargs):
         # get primary key of the detailview
         modelPrimaryKey = self.kwargs['pk']
@@ -282,13 +282,30 @@ class UpdateDescView(generic.UpdateView):
     queryset = modelrepresentation.objects.all()
 
     def get_success_url(self):
-        return reverse_lazy('webapp:detail', kwargs={'pk' : self.object.pk})
-        
+        return reverse_lazy('webapp:detail', kwargs={'pk' : self.object.pk}) 
 
 class CreateAnnoView(generic.CreateView):
     template_name = 'createanno.html'
     form_class = AnnotationForm
     queryset = annotation.objects.all()
+    # context['owner'] = component.objects.get(id=self.kwargs.get('pk'))
+
+    def get_context_data(self, **kwargs):
+        self.ownerid = get_object_or_404(component, id=self.kwargs['pk'])
+        kwargs['owner'] = self.ownerid
+        return super().get_context_data(**kwargs)
+
+
+    # def get_context_data(self, *args, **kwargs):
+    #     # get primary key of the detailview
+    #     componentPrimaryKey = self.kwargs['pk']
+        
+    #     # Get context so we can add more data to it
+        # context = super(CreateAnnoView, self).get_context_data(*args, **kwargs)
+        # print(context)
+    #     context['owner'] = component.objects.get(id=self.kwargs.get('pk'))
+
+    #     return 
 
     def form_valid(self, form):
         # Create form with a foreign key requires setting of the foreign key with this code
