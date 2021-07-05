@@ -157,11 +157,11 @@ def addComponentsToGraph(context, graph):
         if attributeString == "" and operationString == "":
             graph.node(c.name, nohtml(c.name), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
         elif operationString == "":
-            graph.node(c.name, nohtml('{' + c.name + '}|' + attributeString), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
+            graph.node(c.name, nohtml('{' + c.type + ": " + c.name + '}|' + attributeString), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
         elif attributeString == "":
-            graph.node(c.name, nohtml('{' + c.name + '}|' + operationString), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
+            graph.node(c.name, nohtml('{' + c.type + ": " + c.name + '}|' + operationString), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
         else:
-            graph.node(c.name, nohtml('{' + c.name + '}|' + attributeString + '|' + operationString), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
+            graph.node(c.name, nohtml('{' + c.type + ": " + c.name + '}|' + attributeString + '|' + operationString), style="filled", fillcolor="lightgrey", color="black", fontname="Helvetica", fontsize="11")
 
     return graph
 
