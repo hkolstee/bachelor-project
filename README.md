@@ -22,11 +22,11 @@ Django requires a main application with the main settings, then different parts 
 for example:
 
 bachelor project-
-                |-app-
-                     |-appPackage-
-                                 |-application
-                                 |-accounts
-                                 |-webapp
+               * |-app-
+                    * |-appPackage-
+                               *  |-application
+                               *  |-accounts
+                               *  |-webapp
 
 Here appPackage is the main directory of the entire application.
 The application directory contains the main application settings
