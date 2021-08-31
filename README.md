@@ -29,7 +29,7 @@ for example:
                                      |-webapp
 
 Here appPackage is the main directory of the entire application.
-The application directory contains the main application settings
+The application directory contains the project along with its settings.
 The accounts directory contains the logic and functions to save and make accounts to log in to the application.
 The webapp directory contains everything else for the application.
 
@@ -53,5 +53,28 @@ In the views.py file, it is specified what should be displayed on the different 
 The template directory contains HTML files which are templates to what a webpage should look like. Different views have different templates. The template gets all the information it can use through the context provided in the views.py file
 
 In the media directory, the uploaded XML (or XMI, which is based on XML) files are stored. The migrations directory contains files that keep track of database migrations. The urls.py file contain how the urls should be specified for the different views. Then, in the template file for a view, the home page can for example be called by its specified url.
+
+# How to add to your own django project
+Quick start
+
+First, add the webapp:
+
+1. Add "webapp" to your INSTALLED_APPS setting like this::
+
+    INSTALLED_APPS = [
+        ...
+        'webapp',
+    ]
+
+2. Include the webapp URLconf in your project urls.py like this::
+
+    path('webapp/', include('webapp.urls', namespace='webapp')),
+
+
+Then finally:
+
+3. Run ``python manage.py migrate`` to create the webapp models.
+
+4. Visit http://127.0.0.1:8000/webapp/ to use the application.
 
 
