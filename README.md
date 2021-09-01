@@ -25,12 +25,10 @@ for example:
                     |-app-
                          |-appPackage-
                                      |-application
-                                     |-accounts
                                      |-webapp
 
-Here appPackage is the main directory of the entire application.
+Here appPackage is the main directory of the entire project.
 The application directory contains the project along with its settings.
-The accounts directory contains the logic and functions to save and make accounts to log in to the application.
 The webapp directory contains everything else for the application.
 
 To elaborate:
@@ -70,9 +68,16 @@ First, add the webapp:
 
     path('webapp/', include('webapp.urls', namespace='webapp')),
 
+3. To install the package, use pip:
 
-Then finally:
+python -m pip install --user gen_representation-0.1.tar.gz
 
-3. Run ``python manage.py migrate`` to create the webapp models.
+With luck, your Django project should now work correctly again. Run the server again to confirm this.
 
-4. Visit http://127.0.0.1:8000/webapp/ to use the application.
+4. Run ``python manage.py migrate`` in the appPackage directory to create the webapp models.
+
+5. Visit http://127.0.0.1:8000/webapp/ to use the application.
+
+To uninstall the package, use pip:
+
+python -m pip uninstall django-polls
