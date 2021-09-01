@@ -35,12 +35,12 @@
                                     <!-- <li><a class="dropdown-item" href="#">Remove File</a></li> -->
                                     <li><a class="dropdown-item" href="{% url 'webapp:file_list' %}">All Files</a></li>
                                     <li><hr class="dropdown-divider" /></li>
-                                    <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Log out</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'webapp:logout' %}">Log out</a></li>
                                 </ul>
                             </li>
                         {% else %}
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'accounts:login' %}">Login</a></li>
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'accounts:register' %}">Register</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'webapp:login' %}">Login</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'webapp:register' %}">Register</a></li>
                         {% endif %}
                     </ul>
                 </div>

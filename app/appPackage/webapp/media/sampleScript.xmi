@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><XMI xmlns:UML="href://org.omg/UML/1.3" xmi.version="1.1">
+<XMI.header>
+<XMI.metamodel xmi.name="UML" xmi.version="1.3"/>
+</XMI.header>
+<XMI.content>
+<UML:Model name="PlantUML" xmi.id="model1">
+<UML:Namespace.ownedElement>
+<UML:Class isInterface="true" name="Command" namespace="model1" xmi.id="cl0002">
+<UML:Classifier.feature>
+<UML:Operation name="execute()" xmi.id="att10"/>
+</UML:Classifier.feature>
+</UML:Class>
+<UML:Class name="CashRegister" namespace="model1" xmi.id="cl0003">
+<UML:Classifier.feature>
+<UML:Attribute name="total" xmi.id="att11"/>
+<UML:Operation name="addCash()" xmi.id="att12"/>
+<UML:Operation name="getTotal()" xmi.id="att13"/>
+</UML:Classifier.feature>
+</UML:Class>
+<UML:Class name="Purchase" namespace="model1" xmi.id="cl0004">
+<UML:Classifier.feature>
+<UML:Attribute name="cashRegister" xmi.id="att14"/>
+<UML:Attribute name="amount" xmi.id="att15"/>
+<UML:Operation name="execute()" xmi.id="att16"/>
+</UML:Classifier.feature>
+</UML:Class>
+<UML:Class name="PurchaseInvoker" namespace="model1" xmi.id="cl0005">
+<UML:Classifier.feature>
+<UML:Attribute name="executedPurchases" xmi.id="att17"/>
+<UML:Operation name="replayPurchases()" xmi.id="att18"/>
+</UML:Classifier.feature>
+</UML:Class>
+<UML:Association name="has a" namespace="model1" xmi.id="ass19">
+<UML:Association.connection>
+<UML:AssociationEnd aggregation="composite" association="ass19" type="cl0003" xmi.id="end20">
+<UML:AssociationEnd.participant/>
+</UML:AssociationEnd>
+<UML:AssociationEnd association="ass19" type="cl0004" xmi.id="end21">
+<UML:AssociationEnd.participant/>
+</UML:AssociationEnd>
+</UML:Association.connection>
+</UML:Association>
+<UML:Generalization child="cl0004" name="" namespace="model1" parent="cl0002" xmi.id="ass22"/>
+<UML:Association name="passed to" namespace="model1" xmi.id="ass23">
+<UML:Association.connection>
+<UML:AssociationEnd association="ass23" type="cl0005" xmi.id="end24">
+<UML:AssociationEnd.participant/>
+</UML:AssociationEnd>
+<UML:AssociationEnd association="ass23" type="cl0004" xmi.id="end25">
+<UML:AssociationEnd.participant/>
+</UML:AssociationEnd>
+</UML:Association.connection>
+</UML:Association>
+</UML:Namespace.ownedElement>
+</UML:Model>
+</XMI.content>
+</XMI>

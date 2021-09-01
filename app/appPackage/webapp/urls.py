@@ -22,4 +22,8 @@ urlpatterns = [
     path('model/<int:pk>/updatedesc/', views.UpdateDescView.as_view(), name='updatedesc'),
     path('model/<int:pk>/updateanno/', views.UpdateAnnoView.as_view(), name='updateanno'),
     path('model/<int:pk>/createanno/', views.CreateAnnoView.as_view(), name='createanno'),
+    # For accounts 
+    path("register", views.register, name='register'),
+    path("login", views.login, name="login"),
+    path("logout", views.logout, name="logout"),
 ]

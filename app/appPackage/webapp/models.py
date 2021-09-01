@@ -322,7 +322,12 @@ def findComponents(root, modelId, foreignKey):
         
         componentId = ownedComponent.get('xmi.id')    
         componentName = ownedComponent.get('name')
-        componentType = 'class'
+
+        # In case of interface
+        if ownedComponent.get('isInterface') == 'true':
+            componentType = 'Interface'
+        else:
+            componentType = 'Class'
 
         c = component(componentid = componentId, name =  componentName, type = componentType, modelid = foreignKey)
         components.append(c)
