@@ -55,7 +55,11 @@ In the media directory, the uploaded XML (or XMI, which is based on XML) files a
 # How to add to your own django project
 Quick start
 
-First, add the webapp:
+Before we start, install the dependencies:
+
+  pip install -r requirements.txt
+
+Then, add the webapp:
 
 1. Add "webapp" to your INSTALLED_APPS setting like this::
 
