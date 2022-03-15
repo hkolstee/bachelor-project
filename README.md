@@ -57,31 +57,31 @@ Quick start
 
 Before we start, install the dependencies:
 
-  pip install -r requirements.txt
+  > pip install -r requirements.txt
 
 Then, add the webapp:
 
 1. Add "webapp" to your INSTALLED_APPS setting like this::
 
-    INSTALLED_APPS = [
-        ...
-        'webapp',
-    ]
+    > INSTALLED_APPS = [
+    >     ...
+    >     'webapp',
+    > ]
 
 2. Include the webapp URLconf in your project urls.py like this::
 
-    path('webapp/', include('webapp.urls', namespace='webapp')),
+    > path('webapp/', include('webapp.urls', namespace='webapp')),
 
 3. To install the package, use pip:
 
-python -m pip install --user gen_representation-0.1.tar.gz
+    > python -m pip install --user gen_representation-0.1.tar.gz
 
 With luck, your Django project should now work correctly again. Run the server again to confirm this.
 
-4. Run ``python manage.py migrate`` in the appPackage directory to create the webapp models.
+4. Run ''**python manage.py migrate**'' in the appPackage directory to create the webapp models.
 
-5. Visit http://127.0.0.1:8000/webapp/ to use the application.
+5. Visit **http://127.0.0.1:8000/webapp/** to use the application.
 
 To uninstall the package, use pip:
 
-python -m pip uninstall django-polls
+    > python -m pip uninstall django-polls
