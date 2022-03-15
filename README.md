@@ -84,4 +84,4 @@ With luck, your Django project should now work correctly again. Run the server a
 
 To uninstall the package, use pip:
 
-    > python -m pip uninstall django-polls
+    > python -m pip uninstall gen_representation-0.1
